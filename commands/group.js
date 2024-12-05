@@ -1,3 +1,5 @@
+const Command = require('../lib/Command');
+
 const tagAll = async (sock, message) => {
     if (!message.key.remoteJid.endsWith('@g.us')) {
         await sock.sendMessage(message.key.remoteJid, {
