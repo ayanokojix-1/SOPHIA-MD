@@ -9,13 +9,14 @@ const listCommands = async (sock, message) => {
             if (!categorizedCommands[cmd.category]) {
                 categorizedCommands[cmd.category] = [];
             }
-            categorizedCommands[cmd.category].push(`*${cmd.name}*: ${cmd.description}`);
+            categorizedCommands[cmd.category].push(`*${cmd.name.toUpperCase()}*: ${cmd.description}`);
         });
 
         // Format response text
         let responseText = '*Available Commands:*\n\n';
         for (const [category, cmds] of Object.entries(categorizedCommands)) {
             responseText += `*_____ ${category.toUpperCase()} _____*\n${cmds.join('\n')}\n\n`;
+
         }
 
         await sock.sendMessage(message.key.remoteJid, { text: responseText.trim() });
