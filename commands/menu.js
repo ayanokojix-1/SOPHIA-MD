@@ -36,4 +36,3 @@ const listCommands = async (sock, message) => {
 const listCommand = new Command('menu', 'List all available commands', listCommands);
 module.exports = { listCommand };
 
-module.exports = { listCommand }
