@@ -1,10 +1,16 @@
 {
   "name": "SOPHIA-MD",
   "version": "0.0.1",
-  "description": "",
+  "description": "WhatsApp bot powered by @whiskysockets/baileys",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "pm2 start . --attach --name SOPHIA-MD",
+    "run": "pm2 start . --deep-monitoring --attach --name SOPHIA-MD",
+    "stop": "pm2 stop SOPHIA-MD",
+    "restart": "pm2 restart SOPHIA-MD",
+    "delete": "pm2 delete SOPHIA-MD",
+    "logs": "pm2 logs SOPHIA-MD",
+    "postinstall": "echo 'Post-installation complete! Run npm start to launch SOPHIA-MD.'"
   },
   "author": "Ayanokoji",
   "license": "ISC",
