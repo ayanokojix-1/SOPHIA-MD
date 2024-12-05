@@ -6,17 +6,24 @@ const listCommands = async (sock, message) => {
         // Group commands by category
         const categorizedCommands = {};
         Array.from(commands.values()).forEach((cmd) => {
-            if (!categorizedCommands[cmd.category]) {
-                categorizedCommands[cmd.category] = [];
+            // If the category doesn't exist, initialize it
+            const category = cmd.category || 'General';  // Default category as 'General' if undefined
+
+            // Initialize an array for the category if it doesn't exist
+            if (!categorizedCommands[category]) {
+                categorizedCommands[category] = [];
             }
-            categorizedCommands[cmd.category].push(`*${cmd.name.toUpperCase()}*: ${cmd.description}`);
+
+            // Ensure cmd.name is valid and push the formatted name and description
+            if (cmd.name && cmd.description) {
+                categorizedCommands[category].push(`*${cmd.name.toUpperCase()}*: ${cmd.description}`);
+            }
         });
 
         // Format response text
         let responseText = '*Available Commands:*\n\n';
         for (const [category, cmds] of Object.entries(categorizedCommands)) {
             responseText += `*_____ ${category.toUpperCase()} _____*\n${cmds.join('\n')}\n\n`;
-
         }
 
         await sock.sendMessage(message.key.remoteJid, { text: responseText.trim() });
@@ -27,5 +34,6 @@ const listCommands = async (sock, message) => {
 };
 
 const listCommand = new Command('menu', 'List all available commands', listCommands);
+module.exports = { listCommand };
 
-module.exports = { listCommand}
+module.exports = { listCommand }
