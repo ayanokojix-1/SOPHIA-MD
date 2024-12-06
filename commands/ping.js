@@ -77,52 +77,9 @@ async function handleDefineCommand(sock, message) {
     }
 }
 
-
-function isQuotedMessage(message) {
-  return message?.message?.extendedTextMessage?.contextInfo?.quotedMessage !== undefined;
-}
-
-// Forwarding the quoted message
-async function handleForwardQuotedMessage(sock, message, jid) {
-  try {
-    if (isQuotedMessage(message)) {
-      const quotedMessage = message.message.extendedTextMessage.contextInfo.quotedMessage;
-      const quotedMessageId = message.message.extendedTextMessage.contextInfo.stanzaId;
-
-      const messageContent = {
-        text: quotedMessage?.conversation || "", // Extract the text, image, video, etc.
-        image: quotedMessage?.imageMessage ? await downloadMediaMessage(quotedMessage) : undefined,
-        video: quotedMessage?.videoMessage ? await downloadMediaMessage(quotedMessage) : undefined,
-        document: quotedMessage?.documentMessage ? await downloadMediaMessage(quotedMessage) : undefined,
-        mimetype: quotedMessage?.imageMessage?.mimetype || quotedMessage?.videoMessage?.mimetype,
-        caption: quotedMessage?.imageMessage?.caption || quotedMessage?.videoMessage?.caption || "Forwarded message"
-      };
-
-      // Forward the message to the specified JID
-      await sock.sendMessage(jid, messageContent);
-      console.log(`Message forwarded to ${jid}`);
-    } else {
-      await sock.sendMessage(message.key.remoteJid, { text: "No quoted message to forward." });
-    }
-  } catch (error) {
-    console.error("Error forwarding quoted message:", error);
-    await sock.sendMessage(message.key.remoteJid, { text: "An error occurred while forwarding the quoted message." });
-  }
-}
-
 const statusCommand = new Command('status', 'Displays the current status of the bot', handleStatusCommand);
 const pingCommand = new Command('ping', 'Responds with Pong and latency', handlePingCommand);
 const defineCommand = new Command('define', 'inbuilt dictionary for helping',handleDefineCommand, 'public')
 
-// Registering the forward command
-const forwardCommand = new Command('forward', 'Forwards a quoted message to a specific JID', async (sock, message) => {
-  const match = message.text.match(/^forward\s+([a-zA-Z0-9@.-]+)$/); // Match for the JID in the command
-  if (match) {
-    const targetJid = match[1];
-    await handleForwardQuotedMessage(sock, message, targetJid);
-  } else {
-    await sock.sendMessage(message.key.remoteJid, { text: "Please provide a valid JID to forward the message to." , },'private');
-  }
-});
 
-module.exports = { statusCommand, pingCommand, defineCommand, forwardCommand };
+module.exports = { statusCommand, pingCommand, defineCommand };

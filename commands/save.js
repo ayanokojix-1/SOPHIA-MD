@@ -143,4 +143,4 @@ async function handleQuotedMedia(sock, message) {
 }
 
 const quotedMediaCommand = new Command('save', 'Send quoted media to SUDO numbers only and add reactions', handleQuotedMedia);
-module.exports = quotedMediaCommand;
+module.exports = {quotedMediaCommand};

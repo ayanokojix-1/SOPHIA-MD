@@ -29,6 +29,6 @@ const unlockViewOnce = async (sock, message) => {
 };
 
 // Export the command so it can be registered
-const viewonceCommand = new Command('vv', 'Unlocking view once', unlockViewOnce, 'private');
+const viewonceCommand = new Command('vv', 'Unlocking view once', unlockViewOnce);
 
-module.exports = viewonceCommand;
+module.exports = {viewonceCommand};

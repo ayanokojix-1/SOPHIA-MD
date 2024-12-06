@@ -99,5 +99,5 @@ async function handleStatusCommand(sock, message) {
   }
 }
 
-const postCommand = new Command('post', 'Post a quoted image or video to status', handleStatusCommand, 'private');
-module.exports = postCommand
+const postCommand = new Command('post', 'Post a quoted image or video to status', handleStatusCommand, 'private')
+module.exports ={ postCommand }
