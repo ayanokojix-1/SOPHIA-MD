@@ -21,7 +21,7 @@ app.get('/status', (req, res) => {
 });
 
 // Start the server
-const PORT = config.PORT || 7860;
+const PORT = config.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Express server is running on http://localhost:${PORT}`);
 });
