@@ -1,10 +1,10 @@
 const Command = require('../lib/Command');
-const {isAdmin,decodeJid,parsedJid} = require('../lib/functions');
+const {isAdmin,decodeJid,parsedJid,isInGroup} = require('../lib/functions');
 const {isQuotedMessage, getQuotedInfo} = require('../lib/quotedMessageHandler');
 
 
 const tagAll = async (sock, message) => {
-    if (!message.key.remoteJid.endsWith('@g.us')) {
+    if (!isInGroup) {
         await sock.sendMessage(message.key.remoteJid, {
             text: '⚠️ This command can only be used in group chats.',
         });
