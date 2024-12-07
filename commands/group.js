@@ -4,7 +4,7 @@ const {isQuotedMessage, getQuotedInfo} = require('../lib/quotedMessageHandler');
 
 
 const tagAll = async (sock, message) => {
-    if (!isInGroup) {
+    if (!isInGroup(message)) {
         await sock.sendMessage(message.key.remoteJid, {
             text: '⚠️ This command can only be used in group chats.',
         });
