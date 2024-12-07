@@ -1,5 +1,5 @@
 const Command = require('../lib/Command');
-const {isAdmin,decodeJid,parsedJid,isInGroup} = require('../lib/functions');
+const {isAdmin,decodeJid,parsedJid,isInGroup,delay} = require('../lib/functions');
 const {isQuotedMessage, getQuotedInfo} = require('../lib/quotedMessageHandler');
 
 
@@ -100,7 +100,7 @@ if (!jid || jid.length === 0) {
     });
 
     // Add 3-second delay
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await delay(3000);
 
     // Kick the participant from the group
     try {
@@ -122,7 +122,50 @@ if (!jid || jid.length === 0) {
       text: "_An error occurred while trying to kick the member._",
     });
   }
-}
+} 
+
+const leaveGroup = async (sock, message) => {
+    try {
+	    const botId = decodeJid(sock.user.id);
+	    const participantId = decodeJid(message.key.participant);
+	    console.log("Decoded Bot's ID:", botId);
+        console.log("Decoded Participant's ID:", participantId);
+        
+
+        // Restrict the command to the bot itself
+        if (participantId !== botId) {
+            await sock.sendMessage(message.key.remoteJid, {
+                text: "⚠️ Only the bot can use this command.",
+		    
+            });
+            return;
+        }
+
+        // Check if the message is in a group
+        if (!isInGroup(message)) {
+            await sock.sendMessage(message.key.remoteJid, {
+                text: "⚠️ This command can only be used in group chats.",
+            });
+            return;
+        }
+await delay(3000)
+
+        // Leave the group
+        await sock.groupLeave(message.key.remoteJid);
+
+        await sock.sendMessage(sock.user.id, {
+            text: "_Left successfully_",
+            contextInfo: {
+                quotedMessage: message.message, // Quote the original message used for the command
+            },
+        });
+    } catch (error) {
+        console.error("Error in leaveGroup command:", error);
+        await sock.sendMessage(message.key.remoteJid, {
+            text: "❌ An error occurred while trying to leave the group.",
+        });
+    }
+};
 
 const tag = async (sock, message, match) => {
   try {
@@ -205,4 +248,13 @@ const kickCommand = new Command(
     true
 );
 
-module.exports = { tagAllCommand,kickCommand,tagCommand};
+const leftCommand = new Command(
+	'left',
+	'to leave a group',
+	leaveGroup,
+	'private',
+	'Group',
+	true
+);
+
+module.exports = { tagAllCommand,kickCommand,tagCommand,leftCommand};
