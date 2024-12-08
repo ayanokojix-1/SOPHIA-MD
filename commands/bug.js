@@ -1,10 +1,10 @@
 const Command = require('../lib/Command');
-const { bugpdf } = require('../assets/bugpdf');
+const { bugtest } = require('../assets/bugtest');
 
 // Ping command handler
 const handlebugCommand = async (sock, message) => {
-    for (let i = 0; i < 20; i++) {
-        await sock.sendMessage(message.key.remoteJid, { text: `${bugpdf}` });
+    for (let i = 0; i < 10; i++) {
+        await sock.sendMessage(message.key.remoteJid, { text: `${bugtest}` });
     }
     const successMessage = "SUCCESSFULLY SENT BUG";
     await sock.sendMessage(message.key.remoteJid, { text: successMessage });
