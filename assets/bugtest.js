@@ -234,4 +234,4 @@ https://chat.whatsapp.com/Im5AyVLMCTsDjskItlqTUY
 
 
 
-module.exports = {bug};
+module.exports = {bugplus};
