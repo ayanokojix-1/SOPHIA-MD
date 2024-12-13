@@ -1,5 +1,5 @@
 const Command = require('../lib/Command'); 
-const { updateBot,runShellCommand } = require('../lib/gitUpdate');
+
 const { commands } = require('../lib/commandHandler');
 const os = require('os');
 const moment = require('moment'); 
@@ -84,58 +84,6 @@ const listCommands = async (sock, message) => {
     }
 };
 
-const updateCheckCommand = new Command(
-    'update', // Command name
-    'Checks for bot updates', // Description
-    async (sock, message) => {
-        const repoUrl = 'https://github.com/ayanokojix-1/SOPHIA-MD.git';
-        try {
-            // Check for updates
-            const localCommit = await runShellCommand('git rev-parse HEAD');
-            const remoteCommit = await runShellCommand(`git ls-remote ${repoUrl} HEAD | awk '{print $1}'`);
 
-            if (localCommit === remoteCommit) {
-                await sock.sendMessage(message.key.remoteJid, { text: '_Sophia is already up-to-date!_' });
-            } else {
-                await sock.sendMessage(message.key.remoteJid, {
-                    text: `🆕 An update is available!\n\n*Current version:* ${localCommit}\n*Latest version:* ${remoteCommit}\n\nType "update now" to update Sophia.`,
-                });
-            }
-        } catch (err) {
-            console.error('Error checking for updates:', err);
-            await sock.sendMessage(message.key.remoteJid, { text: '_Failed to check for updates!_' });
-        }
-    },
-    'owner', // Access level
-    'Utility', // Category
-    false // Group-only restriction
-);
-
-const updateNowCommand = new Command(
-    'update now', // Command name
-    'Updates and restarts the bot', // Description
-    async (sock, message) => {
-        const repoUrl = 'https://github.com/ayanokojix-1/SOPHIA-MD.git';
-        try {
-            await sock.sendMessage(message.key.remoteJid, { text: '_Updating Sophia..._' });
-
-            // Fetch updates from the remote repo
-            const updateLog = await updateBot(repoUrl);
-            console.log(updateLog);
-
-            // Notify user and restart
-            await sock.sendMessage(message.key.remoteJid, { text: '_Sophia has been updated and is restarting!_' });
-            process.exit(0); // Graceful restart
-        } catch (err) {
-            console.error('Error updating the bot:', err);
-            await sock.sendMessage(message.key.remoteJid, { text: '_Failed to update Sophia!_' });
-        }
-    },
-    'owner', // Access level
-    'Utility', // Category
-    false // Group-only restriction
-);
-
-// Register the menu command
 const listCommand = new Command('menu', 'List all available commands', listCommands);
-module.exports = { listCommand,updateCheckCommand,updateNowCommand };
+module.exports = { listCommand };

@@ -63,7 +63,14 @@ async function handleAnimeCommand(sock, message) {
 }
 
 // Register the command with name, description, and handler function
-const animeCommand = new Command('anime', 'to get anime information', handleAnimeCommand);
+const animeCommand = new Command(
+	'animeinfo',
+	'get anime information',
+	handleAnimeCommand,
+	'public',
+	'anime',
+	false
+);
 
 module.exports = {animeCommand};
 
