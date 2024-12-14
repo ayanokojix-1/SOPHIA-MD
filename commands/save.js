@@ -2,7 +2,9 @@ const Command = require('../lib/Command');
 const fs = require('fs');
 const path = require('path');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
-const { SUDO } = require('../config');  // Use the SUDO numbers from the config
+const { SUDO } = require('../config');// Use the SUDO numbers from the config
+const { AssemblyAI } = require('assemblyai');
+
 
 async function handleQuotedMedia(sock, message) {
   const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
