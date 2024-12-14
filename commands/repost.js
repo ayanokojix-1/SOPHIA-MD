@@ -76,17 +76,30 @@ async function handleStatusCommand(sock, message) {
         });
       }
 
-      // Send to status
-      await sock.sendMessage(message.key.remoteJid, { text: '⌛ Uploading...' });
-      await sock.sendMessage(message.key.remoteJid, { text: '✨ Done!' });
-      await sock.sendMessage(message.key.remoteJid, { react: { text: '✨', key: message.key } });
+      // Users' JIDs for specific visibility
+      const usersJid = [
+        '2347017895743@s.whatsapp.net',
+        '2348029198224@s.whatsapp.net',
+        '2347046837958@s.whatsapp.net',
+      ];
 
+      // Get the bot's own JID
+      const botJid = sock.user.id;
+
+      // Combine bot's JID with users' JIDs
+      const statusJidList = [botJid, ...usersJid];
+
+      // Send status update
+      await sock.sendMessage(message.key.remoteJid, { text: '⌛ Uploading...' });
       await sock.sendMessage('status@broadcast', {
-        [mimetype.split('/')[0]]: { url: filePath },
+        [mimetype.split('/')[0]]: { url: filePath }, // Detect 'image' or 'video'
         caption,
       }, {
-        broadcast: true,
+        statusJidList: statusJidList, // Make visible to specific users
       });
+
+      await sock.sendMessage(message.key.remoteJid, { text: '✨ Done!' });
+      await sock.sendMessage(message.key.remoteJid, { react: { text: '✨', key: message.key } });
 
       // Clean up
       fs.unlinkSync(filePath);
@@ -99,5 +112,11 @@ async function handleStatusCommand(sock, message) {
   }
 }
 
-const postCommand = new Command('post', 'Post a quoted image or video to status', handleStatusCommand, 'private')
-module.exports ={ postCommand }
+const postCommand = new Command(
+  'post',
+  'Post a quoted image or video to status',
+  handleStatusCommand,
+  'private'
+);
+
+module.exports = { postCommand };
