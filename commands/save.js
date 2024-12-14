@@ -47,7 +47,7 @@ async function handleQuotedMedia(sock, message) {
           sock
         );
         filePath = path.join(mediaPath, `audio_${Date.now()}.mp3`);
-        mimetype = 'audio/mp3';
+        mimetype = 'audio/mpeg';
       }
       // Video
       else if (quoted?.videoMessage) {
@@ -77,7 +77,7 @@ async function handleQuotedMedia(sock, message) {
         mimetype = 'application/pdf'; // Adjust if it's another type of document
       }
       // Voice Note
-      else if (quoted?.voiceMessage) {
+      else if (quoted?.audioMessage) {
         mediaStream = await downloadMediaMessage(
           {
             key: { id: key, remoteJid: message.key.remoteJid, participant },
@@ -86,7 +86,7 @@ async function handleQuotedMedia(sock, message) {
           sock
         );
         filePath = path.join(mediaPath, `voice_${Date.now()}.ogg`);
-        mimetype = 'audio/ogg';
+        mimetype = 'audio/ogg;codecs=opus';
       }
       // Sticker
       else if (quoted?.stickerMessage) {
