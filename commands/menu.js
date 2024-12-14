@@ -46,9 +46,12 @@ const listCommands = async (sock, message) => {
             categorizedCommands[category].push(`│  *${commandName}*`);
         });
 
+        // Sort categories alphabetically
+        const sortedCategories = Object.keys(categorizedCommands).sort();
+
         // Format the menu
         let responseText = 
-	`≿━━━━༺❀𝑺𝑶𝑷𝑯𝑰𝑨-𝑴𝑫༻━━━━≾
+	`≿━━━━༺❀𝑺𝑶𝑷𝑯𝑰𝑨-𝑴𝑩༻━━━━≾
 ╔═══.·:·.☽✧ ✦ ✧☾.·:·.═══╗
 ☆   MADE BY AYANOKOJI☆
 ╚═══.·:·.☽✧ ✦ ✧☾.·:·.═══╝
@@ -66,13 +69,12 @@ const listCommands = async (sock, message) => {
 ➛Date: ${currentDate}
 \`\`\`
 ╚══════════════════════╝
-
 `;
 
-        // List Commands by Category
-        for (const [category, cmds] of Object.entries(categorizedCommands)) {
+        // List Commands by Category in sorted order
+        for (const category of sortedCategories) {
             responseText += `\n╔═══.·:·.☽✧ ✦ ${category.toUpperCase()} ✧☾.·:·.\n`;
-            responseText += `|☞|${cmds.join('\n|☞|')}\n`;
+            responseText += `|☞|${categorizedCommands[category].join('\n|☞|')}\n`;
             responseText += `╚═══.·:·.☽✧ ✦ ✧☾.·:·.\n`;
         }
 
@@ -83,7 +85,6 @@ const listCommands = async (sock, message) => {
         await sock.sendMessage(message.key.remoteJid, { text: '☠️ Failed to list commands.' });
     }
 };
-
 
 const listCommand = new Command('menu', 'List all available commands', listCommands);
 module.exports = { listCommand };
