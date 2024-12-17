@@ -3,6 +3,8 @@ const config = require('../config');
 const axios = require('axios');
 const os = require('os');
 const fs = require('fs');
+const {delay} = require('../lib/functions');
+const { exec } = require('child_process');
 
 // Function to detect platform (Render, Heroku, VPS, or Unknown)
 const detectPlatform = () => {
@@ -77,9 +79,41 @@ async function handleDefineCommand(sock, message) {
     }
 }
 
+
+const restartCommand = new Command(
+  'restart',
+  'Restart the bot',
+  async (sock, message) => {
+    console.log('Restarting the bot...');
+    // Send restart message using console.wa
+    await console.wa('Bot is restarting... 🔄');
+    
+    // Wait for 1 second using your delay helper
+    await delay(1000);
+
+    // Restart logic
+    console.log('Bot restarting now...');
+    exec("npm restart", (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error restarting bot: ${error.message}`);
+        return;
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+        return;
+      }
+      console.log(`stdout: ${stdout}`);
+    });
+  },
+  'private', // Access level (for admins only)
+  'Utility', // Category
+  false // Group-only restriction
+);
+
+
 const statusCommand = new Command('status', 'Displays the current status of the bot', handleStatusCommand);
 const pingCommand = new Command('ping', 'Responds with Pong and latency', handlePingCommand);
 const defineCommand = new Command('define', 'inbuilt dictionary for helping',handleDefineCommand, 'public')
 
 
-module.exports = { statusCommand, pingCommand, defineCommand };
+module.exports = { statusCommand,restartCommand,pingCommand, defineCommand };
