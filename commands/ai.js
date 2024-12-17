@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys'); // Adjust this to match your library import
 const { AssemblyAI } = require('assemblyai');
-const Command = require('../lib/Command')
+const Command = require('../lib/Command');
 
 // AssemblyAI setup
 const client = new AssemblyAI({

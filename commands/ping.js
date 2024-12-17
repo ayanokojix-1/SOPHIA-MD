@@ -73,7 +73,7 @@ async function handleDefineCommand(sock, message) {
         await sock.sendMessage(message.key.remoteJid, { text: reply });
     } catch (error) {
         console.error(error);
-        await sock.sendMessage(message.key.remoteJid, { text: "Couldn't find the definition for that word. ❌" });
+        await sock.sendMessage(message.key.remoteJid, { text: "Couldn't find the definition for that word. ❌"});
     }
 }
 
