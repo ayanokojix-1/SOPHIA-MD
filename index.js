@@ -4,7 +4,6 @@ const config = require('./config');
 
 global.startTime = Date.now();
 require('./lib/mediaHelper');
-require('./lib/waMedia');
 // Start connection logic
 connectionLogic();
 
