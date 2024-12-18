@@ -3,7 +3,7 @@ const connectionLogic = require('./lib/connect');
 const config = require('./config');
 
 global.startTime = Date.now();
-
+require('./lib/mediaHelper');
 // Start connection logic
 connectionLogic();
 
