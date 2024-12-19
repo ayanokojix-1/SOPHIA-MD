@@ -22,8 +22,8 @@ jobs:
     
     - name: Build Docker image
       run: |
-        docker build -t quay.io/ayanokojix2306/kojiXsophia:latest .
+        docker build -t quay.io/ayanokojix2306/kojixsophia:latest .
     
     - name: Push Docker image to Quay.io
       run: |
-        docker push quay.io/ayanokojix2306/kojiXsophia:latest
+        docker push quay.io/ayanokojix2306/kojixsophia:latest
