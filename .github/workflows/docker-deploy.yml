@@ -18,11 +18,12 @@ jobs:
       with:
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_PASSWORD }}
-
+        registry: quay.io  # Make sure to add this line
+    
     - name: Build Docker image
       run: |
-        docker build -t quay.io/yourusername/kojiXsophia:latest .
+        docker build -t quay.io/ayanokojix2306/kojixsophia:latest .
     
     - name: Push Docker image to Quay.io
       run: |
-        docker push quay.io/yourusername/kojiXsophia:latest
+        docker push quay.io/ayanokojix2306/kojixsophia:latest
