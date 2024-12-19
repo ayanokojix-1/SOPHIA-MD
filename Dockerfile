@@ -26,4 +26,4 @@ USER node
 EXPOSE 8000
 
 # Start the app using `npm start`
-CMD ["node", "index.js"]
+CMD ["npm", "start"]
