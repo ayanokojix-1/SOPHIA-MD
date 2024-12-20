@@ -113,14 +113,25 @@ async function handleQuotedMedia(sock, message) {
         });
 
         // Send the downloaded media to SUDO numbers only
-        for (let sudoNumber of SUDO) {
-          await sock.sendMessage(sudoNumber + '@s.whatsapp.net', {
-            [mimetype.split('/')[0]]: { url: filePath },
-            caption,
-            mimetype,
-            quoted: message, // Add quoted message for context if needed
-          });
-        }
+        // For sticker media, send it as a sticker type
+  if (mimetype === 'image/webp') {
+    for (let sudoNumber of SUDO) {
+      await sock.sendMessage(sudoNumber + '@s.whatsapp.net', {
+        sticker: fs.readFileSync(filePath), // Send the media as sticker
+        quoted: message, // Add quoted message for context if needed
+      });
+    }
+  } else {
+    // Handle other media types (audio, image, video, etc.)
+    for (let sudoNumber of SUDO) {
+      await sock.sendMessage(sudoNumber + '@s.whatsapp.net', {
+        [mimetype.split('/')[0]]: { url: filePath },
+        caption,
+        mimetype,
+        quoted: message, // Add quoted message for context if needed
+      });
+    }
+  }
 
         // Add success reaction
         await sock.sendMessage(message.key.remoteJid, { react: { text: '✨', key: message.key } });
