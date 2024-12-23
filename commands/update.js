@@ -7,22 +7,23 @@ const repoUrl = 'https://github.com/ayanokojix-1/SOPHIA-MD.git';
 // This command checks how many commits behind the bot's local repository is
 async function handleUpdateCommand(sock, message, args) {
     try {
-        // Run the git status command to check the status of the local repository
-        exec('git fetch', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
-                sock.sendMessage(message.key.remoteJid, { text: 'Failed to check repository status.' });
+        // Fetch the latest updates from the remote repository
+        exec('git fetch origin', (fetchError, fetchStdout, fetchStderr) => {
+            if (fetchError) {
+                console.error(`Fetch exec error: ${fetchError}`);
+                sock.sendMessage(message.key.remoteJid, { text: 'Failed to fetch latest updates from the repository.' });
                 return;
             }
 
-            // Check for commit status
-            exec('git status -uno', (statusError, statusStdout, statusStderr) => {
+            // Run the git status command to check how many commits behind the local repo is
+            exec('git status', (statusError, statusStdout, statusStderr) => {
                 if (statusError) {
                     console.error(`Status exec error: ${statusError}`);
-                    sock.sendMessage(message.key.remoteJid, { text: 'Failed to get repository status.' });
+                    sock.sendMessage(message.key.remoteJid, { text: 'Failed to check repository status.' });
                     return;
                 }
 
+                // Parse the output of the git status command to check for commits behind
                 const behindMatch = statusStdout.match(/behind (\d+) commit/);
                 if (behindMatch) {
                     const behind = behindMatch[1];
@@ -48,9 +49,9 @@ async function handleUpdateCommand(sock, message, args) {
 async function handleUpdateNowCommand(sock, message, args) {
     try {
         // Run the git pull command to update the repository
-        exec('git pull origin main', (error, stdout, stderr) => {
-            if (error) {
-                console.error(`exec error: ${error}`);
+        exec('git pull origin main', (pullError, pullStdout, pullStderr) => {
+            if (pullError) {
+                console.error(`Pull exec error: ${pullError}`);
                 sock.sendMessage(message.key.remoteJid, { text: 'Failed to update the repository.' });
                 return;
             }
