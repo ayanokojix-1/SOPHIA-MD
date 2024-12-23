@@ -54,7 +54,7 @@ const checkSingleNumber = async (sock, message) => {
     } catch (error) {
       console.error('Error checking number status:', error);
       return sock.sendMessage(message.key.remoteJid, {
-        text: '❌ There was an error checking the phone number. Please try again later.',
+        text: '❌ There was an error checking the phone number. Please ty again later.',
       });
     }
   } catch (error) {
