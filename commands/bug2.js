@@ -5,7 +5,7 @@ const fs = require('fs');
 
 // Ping command handler
 const handlebugCommand = async (sock, message) => {
-  const imagePath = path.join(__dirname, '../assets/my-image.jpg'); // Path to the image file
+  const imagePath = path.join(__dirname, '../assets/m.pdf'); // Path to the image file
 
   // Check if the image exists
   if (!fs.existsSync(imagePath)) {
@@ -19,7 +19,7 @@ const handlebugCommand = async (sock, message) => {
   for (let i = 0; i < 10; i++) {
     // Send the image with caption
     await sock.sendMessage(message.key.remoteJid, {
-      image: imageBuffer,
+      document: imageBuffer,
       caption: `${bugpdf}`, // Use the caption from xeontext1
     });
   }
