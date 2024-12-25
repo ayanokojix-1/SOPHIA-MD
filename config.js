@@ -6,5 +6,6 @@ module.exports = {
     SESSION_ID: process.env.SESSION_ID || '',
     DATABASE_URL: process.env.DATABASE_URL || '',
     MONGODB_URI: process.env.MONGODB_URI || '',
-    MODE: process.env.MODE || 'private'
+    MODE: process.env.MODE || 'private',
+    PORT: process.env.PORT || 8001
 };
