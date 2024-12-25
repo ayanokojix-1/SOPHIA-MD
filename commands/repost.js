@@ -94,6 +94,7 @@ async function handleStatusCommand(sock, message) {
       // Add the bot's JID to the list
       const botJid = sock.user.id;
       const updatedStatusJidList = [botJid, ...statusJidList];
+	// console.log(updatedStatusJidList);
 
       // === Send Status Update ===
       await sock.sendMessage(message.key.remoteJid, { text: '⌛ Uploading...' });

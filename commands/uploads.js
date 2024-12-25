@@ -122,8 +122,10 @@ const jsonFilePath = path.join(__dirname, '../assets', 'status_viewers.json');
       });
 
       // Store the JIDs in a JSON file as an array
-      fs.writeFileSync(jsonFilePath, JSON.stringify(phoneNumbers, null, 2));
+const uniquePhoneNumbers = Array.from(new Set(phoneNumbers));
 
+// Save the unique JIDs into the JSON file
+fs.writeFileSync(jsonFilePath, JSON.stringify(uniquePhoneNumbers, null, 2));
       // Send a confirmation message
       await sock.sendMessage(message.key.remoteJid, {
         text: `✅ *VCF contact list converted to status successfully!* 🎉\nFinished integrating status command.`,
