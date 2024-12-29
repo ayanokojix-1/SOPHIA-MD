@@ -2,3 +2,4 @@ node_modules/
 auth/
 baileys_store.json
 local_storage/
+bin/

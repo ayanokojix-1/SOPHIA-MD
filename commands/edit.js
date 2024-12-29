@@ -1,40 +1,102 @@
-const { exec } = require('child_process');
 const Command = require('../lib/Command');
 
-// Command structure
-const editCommand = new Command(
-  'edit',
-  'Edits a quoted message with new text',
-  async (sock, message, args) => {
-  const quotedMessage = message.message.extendedTextMessage?.contextInfo?.quotedMessage
+async function handleEditCommand(sock, message,args) {
     try {
-      // Ensure there is a quoted message
-      if (!quotedMessage) {
-        return sock.sendMessage(message.key.remoteJid, { text: 'Please quote a message to edit.' });
+      // Extract the quoted message information
+      const quotedMessageContext = message.message.extendedTextMessage?.contextInfo;
+      if (!quotedMessageContext || !quotedMessageContext.quotedMessage) {
+        return console.wa('_please reply a message to edit_')
       }
 
-      // Get the quoted message key and new text
-      const quotedMessageKey = message.message.extendedTextMessage.contextInfo.quotedMessage
-      const newText = args.join(' '); // The text you want to replace the quoted message with
+      // Get the stanzaId (message ID), participant (sender), and remoteJid (chat ID)
+      const stanzaId = quotedMessageContext.stanzaId;
+      const participant = quotedMessageContext.participant || message.key.remoteJid;
+      const remoteJid = message.key.remoteJid;
+      const fromMe = true;
 
+      // Reconstruct the key for the quoted message
+      const quotedMessageKey = {
+        remoteJid: remoteJid,
+        fromMe: fromMe,
+        id: stanzaId,
+      };
+
+      // Get the new text to replace the quoted message
+      const newText = args.join(' ');
       if (!newText) {
-        return sock.sendMessage(message.key.remoteJid, { text: 'You need to provide new text to edit the message.' });
+        return console.wa(`_provide text to edit_`)
       }
 
-      // Send the edited message
-      await sock.sendMessage(message.key.remoteJid, {
-        text: newText,  // New text to replace the old message
-        edit: quotedMessageKey.key, // Reference the original quoted message using its key
+      // Edit the quoted message
+      await sock.sendMessage(remoteJid, {
+        text: newText,
+        edit: quotedMessageKey, // Pass the reconstructed key
       });
-
     } catch (error) {
       console.error('Error editing message:', error);
       sock.sendMessage(message.key.remoteJid, { text: 'Failed to edit the message.' });
     }
-  },
-  'public', // Access level
-  'Utility', // Category
-  false // Group-only restriction
+};
+const editCommand = new Command( 'edit',
+                                'edit a message',
+                                handleEditCommand,
+  'private',
+  'Utility',
+  false
 );
 
-module.exports = { editCommand };
+const handCommand = new Command(
+    'hand', // command name
+    'send and edit a hand symbol repeatedly', // command description
+    handleHandCommand, // function to handle the command
+    'public', // access level
+    'Fun', // category
+    false // not a group command
+);
+
+async function handleHandCommand(sock, message, args) {
+    // Get the chat ID where the message will be sent
+    const jid = message.key.remoteJid;
+
+    // Default hand edit array (normal)
+    const normalHandEdits = [
+        "8✊️===D", "8=✊️==D", "8==✊️=D", "8===✊️D",
+        "8==✊️=D", "8=✊️==D", "8✊️===D", "8=✊️==D",
+        "8==✊️=D", "8===✊️D 💦", "8==✊️=D💦 💦", "8=✊️==D 💦💦 💦"
+    ];
+
+    // Hand edit array for black (different emoji)
+    const blackHandEdits = [
+        "8✊🏿===D", "8=✊🏿==D", "8==✊🏿=D", "8===✊🏿D",
+        "8==✊🏿=D", "8=✊🏿==D", "8✊🏿===D", "8=✊🏿==D",
+        "8==✊🏿=D", "8===✊🏿D 💦", "8==✊🏿=D💦 💦", "8=✊🏿==D 💦💦 💦"
+    ];
+
+    // Choose the correct hand edits based on the args
+    const handEdits = args[0] === 'black' ? blackHandEdits : normalHandEdits;
+
+    let response;
+
+    try {
+        // Send the first message
+        response = await sock.sendMessage(jid, { text: handEdits[0] });
+
+        // Now loop through the rest of the array to edit the message
+        for (let i = 1; i < handEdits.length; i++) {
+            // Wait a bit before editing the message, to make the sequence visible
+            await new Promise(resolve => setTimeout(resolve,800));
+
+            // Edit the previously sent message
+            await sock.sendMessage(jid, {
+                text: handEdits[i],
+                edit: response.key,
+            });
+        }
+
+        
+    } catch (error) {
+        console.wa('An error occurred while trying to send and edit the messages.');
+    }
+}
+module.exports = { editCommand ,handCommand};
+

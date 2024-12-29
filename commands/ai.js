@@ -15,12 +15,12 @@ async function handleTranscriptionCommand(sock, message) {
   if (!quoted?.audioMessage) {
     // If no quoted audio, send an error message and reaction
     await sock.sendMessage(message.key.remoteJid, {
-      text: 'Please quote an audio message to transcribe.',
-      quoted: message,
+      text: 'Please quote an audio message to change into text'},
+	    { quoted: message
     });
-    await sock.sendMessage(message.key.remoteJid, {
-      react: { text: '❌', key: message.key },
-    });
+    await console.waReact('✖️',message.key)
+  await  delay(3000)
+	  console.waReact(null,message.key)
     return;
   }
 
@@ -73,20 +73,23 @@ async function handleTranscriptionCommand(sock, message) {
       await sock.sendMessage(message.key.remoteJid, {
         react: { text: '❌', key: message.key },
       });
+   delay(5000)
+console.waReact(null,message.key)
       return;
     }
 
     // Reply with the transcribed text
     await sock.sendMessage(message.key.remoteJid, {
-      text: transcript.text,
-      quoted: message,
-    });
+      text: transcript.text},
+	    { quoted: message}
+    );
 
     // Send success reaction
     await sock.sendMessage(message.key.remoteJid, {
       react: { text: '📑', key: message.key },
     });
-
+await delay(5000)
+await console.waReact(null,message.key)
     // Clean up the temporary audio file
     fs.unlinkSync(audioFilePath);
   } catch (error) {

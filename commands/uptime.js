@@ -15,7 +15,7 @@ async function handleUptimeCommand(sock, message) {
     const seconds = totalSeconds % 60;
 
     // Format the uptime message
-    const uptimeText = `*_The bot has been active for_*: _${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds._`;
+    const uptimeText = `*_The sophia-md has been active for_*: _${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds._`;
 
     await sock.sendMessage(message.key.remoteJid, { text: uptimeText });
 }

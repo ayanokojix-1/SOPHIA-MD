@@ -40,6 +40,6 @@ async function handleQuoteResponderCommand(sock, message) {
   }
 }
 
-const quotedCommand = new Command('quoted', 'quotes a message', handleQuoteResponderCommand);
+const quotedCommand = new Command('quote', 'quotes a message', handleQuoteResponderCommand);
 
 module.exports = {quotedCommand}

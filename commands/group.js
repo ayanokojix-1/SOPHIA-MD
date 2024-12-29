@@ -78,8 +78,8 @@ if (!jid || jid.length === 0) {
     text: "_Mention a user to kick or quote the user._",
   });
 }
-	  // Prevent the bot from kicking itself
-    if (jid.includes(sock.user.id)) {
+	const replacer = decodeJid(sock.user.id)
+    if (jid.includes(replacer)) {
       return await sock.sendMessage(message.key.remoteJid, {
         text: "_I cannot kick myself._",
       });
@@ -154,11 +154,7 @@ await delay(3000)
         await sock.groupLeave(message.key.remoteJid);
 
         await sock.sendMessage(sock.user.id, {
-            text: "_Left successfully_",
-            contextInfo: {
-                quotedMessage: message.message, // Quote the original message used for the command
-            },
-        });
+            text: "_Left successfully_"},{quoted:message});
     } catch (error) {
         console.error("Error in leaveGroup command:", error);
         await sock.sendMessage(message.key.remoteJid, {
@@ -258,7 +254,7 @@ try {
     });
 } catch (error) {
     console.error('Error joining group:', error);
-    let errorMessage = '_Request sent I guess_';
+    let errorMessage = '_ERROR JOINING GROUP _';
 
     if (error.message.includes('request to join')) {
         // Handle request-based group
@@ -280,7 +276,7 @@ const joinCommand = new Command(
     'join',
     'Joins a WhatsApp group using an invite link',
     handleJoinCommand,
-    'owner', // Restrict to owners for security
+    'public', // Restrict to owners for security
     'Utility',
     false
 );

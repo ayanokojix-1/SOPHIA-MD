@@ -1,37 +1,43 @@
 const Command = require('../lib/Command');
-
 const quotedImageCommand = new Command(
-  'quotedimage2', // Command name
+  'quotedstick', // Command name
   'Sends the quoted image back to the user', // Command description
-  async (sock, message) => {
+  async (sock, message) => { // Asynchronous function
     // Get the quoted image from the message
     const quotedImage = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-
-    // Check if there's a quoted image
-    if (quotedImage.imageMessage) {
+    
+    // Check if there's a quoted image (stickerMessage)
+    if (quotedImage && quotedImage.stickerMessage) {
       try {
-        // Download the image
-        const imagePath = await console.downloadImage(quotedImage, sock);
+        // Download the sticker image
+        const imagePath = await console.downloadSticker(quotedImage, sock);
+        
         if (imagePath) {
           // Send the downloaded image back to the user
           await sock.sendMessage(message.key.remoteJid, {
-            image: { url: imagePath },
-            caption: 'Here is your quoted image!',
+            sticker: { url: imagePath }
+          });
+        } else {
+          // If the imagePath is not valid
+          await sock.sendMessage(message.key.remoteJid, {
+            text: 'Failed to download the image.'
           });
         }
       } catch (error) {
+        // Error handling if something goes wrong
         console.error('Error downloading or sending the image:', error);
-        await sock.sendMessage(message.key.remoteJid, { text: 'Failed to download or send the image.' });
+        await sock.sendMessage(message.key.remoteJid, {
+          text: 'Failed to download or send the image.'
+        });
       }
     } else {
       // If no quoted image found
-      await console.wa("No quoted image found.");
+      await console.wa("No quoted image.");
     }
   },
   'public', // Access level (can be 'public', 'private', 'admin', etc.)
   'Media', // Category
   false // Group-only restriction (true means only available in groups)
 );
-
 module.exports = { quotedImageCommand };
 

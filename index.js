@@ -4,8 +4,6 @@ const config = require('./config');
 
 global.startTime = Date.now();
 require('./lib/mediaHelper');
-// Start connection logic
-connectionLogic();
 
 // Create and start the Express server
 const app = express();
@@ -21,7 +19,9 @@ app.get('/status', (req, res) => {
 });
 
 // Start the server
-const PORT = config.PORT || 8003;
+const PORT = config.PORT || 8005;
 app.listen(PORT, () => {
   console.log(`Express server is running on http://localhost:${PORT}`);
 });
+
+connectionLogic();

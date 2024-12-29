@@ -75,9 +75,7 @@ const listCommands = async (sock, message) => {
             responseText += `|☞|${cmds.join('\n|☞|')}\n`;
             responseText += `╚═══.·:·.☽✧ ✦ ✧☾.·:·.\n`;
         }
-
-        // Send the message with formatted text
-        await sock.sendMessage(message.key.remoteJid, { text: responseText.trim() });
+	console.wa(responseText.trim())
     } catch (error) {
         console.error('Error while listing commands:', error);
         await sock.sendMessage(message.key.remoteJid, { text: '☠️ Failed to list commands.' });
