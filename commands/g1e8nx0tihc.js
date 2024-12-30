@@ -42,7 +42,7 @@ async function boomCommandFunction(sock, message) {
         buttons: [
           {
             buttonType: 'cta_url',
-            buttonText: 'Visit Google',
+            buttonText: 'BOOM2💣💥',
             buttonCommand: 'https://google.com',
             url: 'https://google.com',
           },
@@ -93,8 +93,8 @@ async function boomCommandFunction(sock, message) {
               body: proto.Message.InteractiveMessage.Body.fromObject({ text: "wanna test out Sophia MD boom?" }),
               footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: "Carousel Footer" }),
               header: proto.Message.InteractiveMessage.Header.fromObject({
-                title: 'Boom Carousel',
-                subtitle: 'Boom!',
+                title: 'Boom Carousel FOr SOPHIA-MD',
+                subtitle: 'BOOOOOOOOOOOOOOOOOOOM!',
                 hasMediaAttachment: false,
               }),
               carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({
