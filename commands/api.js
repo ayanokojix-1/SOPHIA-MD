@@ -27,4 +27,6 @@ async function waifuCommandFunction(sock, message) {
     await sock.sendMessage(message.key.remoteJid, { text: "Sorry, I couldn't fetch a waifu image at the moment." });
   }
 }
+
+
 module.exports = {waifuCommand}

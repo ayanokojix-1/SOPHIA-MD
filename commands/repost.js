@@ -4,8 +4,9 @@ const ffmpeg = require('fluent-ffmpeg');
 const readline = require('readline');
 const { parsePhoneNumberFromString } = require('libphonenumber-js');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
+const { decodeJid } = require('../lib/functions');
 const Command = require('../lib/Command');
-const config = require('../config.js'); // Assuming your config file holds the session ID and handler.
+const config = require('../config.js'); 
 
 async function handleStatusCommand(sock, message) {
   const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
@@ -19,7 +20,6 @@ async function handleStatusCommand(sock, message) {
 
       let mediaStream, filePath, mimetype, caption;
 
-      // Download quoted media
       mediaStream = await downloadMediaMessage(
         {
           key: { id: key, remoteJid: message.key.remoteJid, participant },
@@ -31,11 +31,11 @@ async function handleStatusCommand(sock, message) {
       if (quoted?.imageMessage) {
         filePath = path.join(mediaPath, `image_${Date.now()}.jpg`);
         mimetype = 'image/jpeg';
-        caption = quoted.imageMessage.caption || '*Saved!*';
+        caption = quoted.imageMessage.caption || null;
       } else if (quoted?.videoMessage) {
         filePath = path.join(mediaPath, `video_${Date.now()}.mp4`);
         mimetype = 'video/mp4';
-        caption = quoted.videoMessage.caption || '*Saved!*';
+        caption = quoted.videoMessage.caption || null;
       } else {
         await sock.sendMessage(message.key.remoteJid, { text: '*No valid media to post!*' });
         return;
@@ -48,26 +48,23 @@ async function handleStatusCommand(sock, message) {
         mediaStream.on('error', reject);
       });
 
-      // If the media is a video, check its duration and trim if necessary
       if (mimetype === 'video/mp4') {
         const trimmedFilePath = path.join(mediaPath, `trimmed_${Date.now()}.mp4`);
 
-        // Get video duration
         await new Promise((resolve, reject) => {
           ffmpeg(filePath)
             .ffprobe((err, metadata) => {
               if (err) return reject(err);
               const duration = metadata.format.duration;
 
-              // Trim if duration exceeds 60 seconds
               if (duration > 60) {
                 ffmpeg(filePath)
                   .setStartTime(0)
                   .setDuration(60)
                   .output(trimmedFilePath)
                   .on('end', () => {
-                    fs.unlinkSync(filePath); // Remove original file
-                    filePath = trimmedFilePath; // Update filePath to trimmed file
+                    fs.unlinkSync(filePath); 
+                    filePath = trimmedFilePath; 
                     resolve();
                   })
                   .on('error', reject)
@@ -79,8 +76,7 @@ async function handleStatusCommand(sock, message) {
         });
       }
 
-      // === NEW LOGIC: Get all contacts from JSON file ===
-      const statusJidFile = path.join(__dirname, '../assets/status_viewers.json'); // Path to existing JSON file
+      const statusJidFile = path.join(__dirname, '../assets/status_viewers.json'); 
       if (!fs.existsSync(statusJidFile)) {
         await sock.sendMessage(
           message.key.remoteJid,
@@ -92,13 +88,14 @@ async function handleStatusCommand(sock, message) {
       const statusJidList = JSON.parse(fs.readFileSync(statusJidFile));
 
       // Add the bot's JID to the list
-      const botJid = sock.user.id;
+      const botJid = decodeJid(sock.user.id);
       const updatedStatusJidList = [botJid, ...statusJidList];
 	// console.log(updatedStatusJidList);
 
       // === Send Status Update ===
-      await sock.sendMessage(message.key.remoteJid, { text: '⌛ Uploading...' });
-      await sock.sendMessage(
+      await console.waReact('⏳', message.key);
+	await delay(3000);
+	    await sock.sendMessage(
         'status@broadcast',
         {
           [mimetype.split('/')[0]]: { url: filePath }, // Detect 'image' or 'video'
@@ -109,9 +106,9 @@ async function handleStatusCommand(sock, message) {
         }
       );
 
-      await sock.sendMessage(message.key.remoteJid, { text: '✨ Done!' });
-      await sock.sendMessage(message.key.remoteJid, { react: { text: '✨', key: message.key } });
-
+await console.waReact('✅', message.key);
+await delay(10000);
+await console.waReact(null, message.key);
       // Clean up
       fs.unlinkSync(filePath);
     } catch (error) {

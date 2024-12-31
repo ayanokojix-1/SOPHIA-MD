@@ -1,34 +1,65 @@
- // Import downloadMediaMessage from Whiskysockets
-const Command = require('../lib/Command'); 
+const { downloadMediaMessage } = require('@whiskeysockets/baileys');
+const Command = require('../lib/Command');
+const Pino = require('pino');
 
-// Unlock View Once Command
-const unlockViewOnce = async (sock, message) => {
-    const quotedMessage = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-
-    if (!quotedMessage || !quotedMessage.viewOnceMessage) {
-        await sock.sendMessage(message.key.remoteJid, { text: "Please quote a view-once message to unlock it." });
+async function handleViewOnceCommand(sock, message) {
+    if (!m.quoted) {
+        console.wa('Reply to a ViewOnce message');
         return;
     }
-
+    if (!m.quoted.viewOnceMessageV2) {
+        console.wa('_This is not a ViewOnce message._\n_Please quote a ViewOnce message!!_');
+        return;
+    }
     try {
-        // Download the media from the quoted message
-        const media = await downloadMediaMessage(quotedMessage.viewOnceMessage, 'buffer', {});
+        const participant = message.key.participant;
+        const mess = {
+            key: {
+                id: m.stanzaId,
+                fromMe: message.key.fromMe,
+                remoteJid: message.key.remoteJid,
+                ...(participant && { participant }),
+            },
+            message: m.quoted.viewOnceMessageV2.message,
+        };
 
-        // Send the media back to the chat, making it viewable multiple times
-        if (quotedMessage.viewOnceMessage.message?.imageMessage) {
-            await sock.sendMessage(message.key.remoteJid, { image: media, caption: "Here's the unlocked image!" });
-        } else if (quotedMessage.viewOnceMessage.message?.videoMessage) {
-            await sock.sendMessage(message.key.remoteJid, { video: media, caption: "Here's the unlocked video!" });
-        } else {
-            await sock.sendMessage(message.key.remoteJid, { text: "This type of view-once message is not supported." });
+        const logger = Pino({ level: 'silent' });
+        const mediaBuffer = await downloadMediaMessage(
+            mess,
+            'buffer',
+            {},
+            {
+                logger,
+                reuploadRequest: sock.updateMediaMessage,
+            }
+        );
+
+        if (mess.message.imageMessage) {
+            await sock.sendMessage(message.key.remoteJid, {
+                image: mediaBuffer,
+                caption: mess.message.imageMessage.caption || null,
+                viewOnce: false,
+            });
+        } else if (mess.message.videoMessage) {
+            await sock.sendMessage(message.key.remoteJid, {
+                video: mediaBuffer,
+                caption: mess.message.videoMessage.caption || null,
+                viewOnce: false,
+            });
         }
     } catch (error) {
-        console.error("Failed to unlock view-once message:", error);
-        await sock.sendMessage(message.key.remoteJid, { text: "Failed to unlock view-once message." });
+        console.wa('An error occurred. \nTry again later.');
+        console.log(`Failed to download ViewOnce message: ${error}`);
     }
-};
+}
 
-// Export the command so it can be registered
-const viewonceCommand = new Command('vv', 'Unlocking view once', unlockViewOnce);
+const command = new Command(
+    "vv",
+    "For unlocking ViewOnce images/videos",
+    handleViewOnceCommand,
+    'private',
+    'Interactive',
+    false
+);
 
-module.exports = {viewonceCommand};
+module.exports = { command };

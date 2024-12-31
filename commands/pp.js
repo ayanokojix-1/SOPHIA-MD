@@ -13,14 +13,14 @@ const ppCommand = new Command(
         const imagepath = await console.downloadImage(quoted,sock)
         const jid = sock.user.id;
         await sock.updateProfilePicture(jid,{url: imagepath});
+	await console.removeFile(imagepath);
         await console.wa("successfully updated pfp");
-	await  console.removeFile(imagepath);
       } catch (error) {
         console.log("pp error:", error);
         await console.wa("an error occurred");
       }
     } else {
-      await console.wa("cannot use command");
+      await console.wa("_Please reply to an image_");
     }
   },
 

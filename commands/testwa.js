@@ -1,4 +1,5 @@
 const Command = require('../lib/Command');
+const fs = require('fs');
 const quotedImageCommand = new Command(
   'quotedstick', // Command name
   'Sends the quoted image back to the user', // Command description
@@ -11,11 +12,14 @@ const quotedImageCommand = new Command(
       try {
         // Download the sticker image
         const imagePath = await console.downloadSticker(quotedImage, sock);
+	const path = fs.readFileSync(imagePath)
         
         if (imagePath) {
           // Send the downloaded image back to the user
           await sock.sendMessage(message.key.remoteJid, {
-            sticker: { url: imagePath }
+            sticker: path,
+	    packname: "ayanokoji",
+	   author:"idk",
           });
         } else {
           // If the imagePath is not valid

@@ -31,13 +31,11 @@ async function handleAnimeCommand(sock, message) {
         **Title:** ${animeInfo.title || 'N/A'}
         **Japanese title:** ${animeInfo.title_japanese || 'N/A'}
         **Type:** ${animeInfo.type || 'N/A'}
-        **genre** ${animeInfo.genres || 'N/A'}
         **Minutes per episode:** ${animeInfo.duration || 'N/A'}
         **Episodes:** ${animeInfo.episodes || 'N/A'}
         **Score:** ${animeInfo.score || 'N/A'}
         **Status:** ${animeInfo.status || 'N/A'}
         **Synopsis:** ${animeInfo.synopsis || 'N/A'}
-        **Image:** ${animeInfo.images?.jpg?.image_url || 'No image available'}
       `;
       
       // Send the anime details as a text message
