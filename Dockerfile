@@ -6,6 +6,7 @@ RUN apt-get update && \
     imagemagick \
     ghostscript \
     libreoffice \
+    libvips-dev \
     libwebp-dev \
     && rm -rf /var/lib/apt/lists/*
 
