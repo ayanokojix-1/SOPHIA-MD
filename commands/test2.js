@@ -1,45 +1,92 @@
-const Command = require('../lib/Command');
-const path = require('path');
+const { downloadMediaMessage } = require('@whiskeysockets/baileys');
+const { exec } = require('child_process');
 const fs = require('fs');
+const path = require('path');
+const Command = require('../lib/Command');
+const Pino = require('pino');
 
-// Function to handle the 'test' command
-async function handleTestCommand(sock, message) {
-  try {
-    // The path to the image in the 'assets' folder (relative to this file's location)
-    const imagePath = path.join(__dirname, '../assets/my-image.jpg');
-    
-    // Check if the image exists
-    if (!fs.existsSync(imagePath)) {
-      throw new Error('Image not found!');
+async function handleStickerToPhotoCommand(sock, message) {
+    if (!m.quoted) {
+        console.wa('Reply to a sticker with this command.');
+        return;
     }
+    if (!m.quoted?.stickerMessage) {
+        console.wa('_This is not a sticker message._\n_Please quote a sticker!!_');
+        return;
+    }
+if(m.quoted.stickerMessage.isAnimated!==false){
+	console.wa('Reply to a none animated sticker');
+	return;
+}
+    try {
+        const participant = message.key.participant;
+        const mess = {
+            key: {
+                id: message.key.id,
+                fromMe: message.key.fromMe,
+                remoteJid: message.key.remoteJid,
+                ...(participant && { participant }),
+            },
+            message: m.quoted,
+        };
 
-    // Get the bot's own JID
-    const botJid = sock.user.id;
+        const logger = Pino({ level: 'silent' });
+        const mediaBuffer = await downloadMediaMessage(
+            mess,
+            'buffer',
+            {},
+            {
+                logger,
+                reuploadRequest: sock.updateMediaMessage,
+            }
+        );
 
-    // Users' JIDs to show the status to them too
-    const usersJid = ['2347017895743@s.whatsapp.net', '2348029198224@s.whatsapp.net', '2347046837958@s.whatsapp.net'];
+        // Save the sticker temporarily
+        const tempInputPath = path.join(__dirname, 'temp.webp');
+        const tempOutputPath = path.join(__dirname, 'temp.jpg');
+        fs.writeFileSync(tempInputPath, mediaBuffer);
 
-    // Combine bot's JID with users' JIDs
-    const statusJidList = [botJid, ...usersJid];
+        // Convert the sticker (WebP) to a JPG using FFmpeg
+        await new Promise((resolve, reject) => {
+            exec(
+                `ffmpeg -i ${tempInputPath} ${tempOutputPath}`,
+                (error, stdout, stderr) => {
+                    if (error) {
+                        console.log(`FFmpeg error: ${error.message}`);
+                        reject(error);
+                    } else {
+                        resolve();
+                    }
+                }
+            );
+        });
 
-    // Send the image as a status update
-    await sock.sendMessage('status@broadcast', {
-      image: fs.readFileSync(imagePath), // Read the image file
-      caption: 'Here is an image as a status update!', // Optional caption for the image
-    }, {
-      statusJidList: statusJidList, // Include bot's JID to make sure it's visible to the bot
-      backgroundColor: '#317531', // Optional: Set background color
-      font: 3, // Optional: Set font style
-    });
+        // Read the converted JPG image
+        const outputBuffer = fs.readFileSync(tempOutputPath);
 
-    // Confirm success with the user
-    await sock.sendMessage(message.key.remoteJid, { text: '✅ Status updated with image successfully!' });
-  } catch (error) {
-    console.error('Error while updating status with image:', error);
-    await sock.sendMessage(message.key.remoteJid, { text: '☠️ Failed to update status with image.' });
-  }
+        // Send the converted photo
+        await sock.sendMessage(message.key.remoteJid, {
+            image: outputBuffer,
+            caption: 'Here is the sticker as a photo!',
+        });
+
+        // Clean up temporary files
+        fs.unlinkSync(tempInputPath);
+        fs.unlinkSync(tempOutputPath);
+    } catch (error) {
+        console.wa('An error occurred while processing the sticker.\nPlease try again later.');
+        console.log(`Error converting sticker to photo: ${error}`);
+    }
 }
 
-// Register the 'test' command
-const test2Command = new Command('test2', 'Test posting an image to status', handleTestCommand);
-module.exports = {test2Command};
+const command = new Command(
+    "photo",
+    "Convert a sticker into a photo",
+    handleStickerToPhotoCommand,
+    'private',
+    'Media',
+    false
+);
+
+module.exports = { command };
+
