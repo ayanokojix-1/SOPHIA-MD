@@ -76,14 +76,22 @@ async function handleStatusCommand(sock, message) {
         });
       }
 
-      const statusJidFile = path.join(__dirname, '../assets/status_viewers.json'); 
+      const statusJidFile = path.join(__dirname, '../lib/database/status_viewers.json'); 
       if (!fs.existsSync(statusJidFile)) {
-        await sock.sendMessage(
-          message.key.remoteJid,
-          { text: `status_viewers.json file not found.` }
-        );
-        return;
-      }
+  // If statusJidFile doesn't exist, attempt to delete filePath if it exists
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);  // Delete the file if it exists
+  } else {
+    return;
+  }
+  
+  // Inform the user that status_viewers.json is not found
+  await sock.sendMessage(
+    message.key.remoteJid,
+    { text: `status_viewers.json file not found.` }
+  );
+  return;
+}
 
       const statusJidList = JSON.parse(fs.readFileSync(statusJidFile));
 
@@ -94,7 +102,7 @@ async function handleStatusCommand(sock, message) {
 
       // === Send Status Update ===
       await console.waReact('⏳', message.key);
-	await delay(3000);
+	await delay(2000);
 	    await sock.sendMessage(
         'status@broadcast',
         {
@@ -120,7 +128,7 @@ await console.waReact(null, message.key);
   }
 }
 
-const statusJidFile = path.join(__dirname, '../assets/status_viewers.json');
+const statusJidFile = path.join(__dirname, '../lib/database/status_viewers.json');
 
 // Utility function to read the JSON file
 function getStatusJidList() {

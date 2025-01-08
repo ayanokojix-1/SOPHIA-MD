@@ -47,9 +47,21 @@ else if(video){
     console.wa('please quote an image or a video',message);
   }
 }
-const takeStickerCommand = async(sock,message)=> {
-  
-}
+const handleTakeStickerCommand = async(sock,message,args)=> {
+  if(m.quoted?.stickerMessage){
+    try{
+      const metaData = args[0] ||STICKER_PACKNAME;
+      const stickerBuffer = await downloadMedia(message);
+      const modifiedStickerBuffer = await writeExifWebp(stickerBuffer,metaData);
+     await console.waMedia.sendSticker(modifiedStickerBuffer)
+    }catch(er){
+      console.error("error modifying sticker",er);
+      console.wa("An error occurred");
+    }
+  } else{
+    console.wa('_Reply to a sticker_',message);
+  }
+};
 const photoAndStickerCommand = new Command(
   'sticker',
   'changes media to sticker',
@@ -58,4 +70,12 @@ const photoAndStickerCommand = new Command(
   'Media',
   false
    );
-   module.exports = { photoAndStickerCommand }
+   const takeStickerCommand = new Command(
+     'take',
+     'for changing meta data of sticker(stealing sticker)',
+     handleTakeStickerCommand,
+     'public',
+     'Media',
+     false
+     );
+   module.exports = { photoAndStickerCommand,takeStickerCommand }

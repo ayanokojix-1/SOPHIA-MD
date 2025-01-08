@@ -1,7 +1,10 @@
 const Command = require('../lib/Command'); // Assuming you're using this structure for commands
 const fs = require('fs');
 const path = require('path');
-const names= "pp";
+function getJid(message) {
+  const quotedParticipant = message.message.extendedTextMessage?.contextInfo?.participant;
+  return quotedParticipant ? quotedParticipant : message.key.remoteJid;
+}
 // Define the '.pp' command
 const ppCommand = new Command(
   "pp",
@@ -25,12 +28,33 @@ const ppCommand = new Command(
   },
 
   'private', // This is a private command
-  'Profile', // Category for organization
+  'User', // Category for organization
   false // No group restriction
 );
 
-async function handleGetPp(sock, message){
-  
-}
 
-module.exports = { ppCommand };
+async function handleGetPp(sock, message) {
+  try {
+    const jid = getJid(message);
+    const ppUrl = await sock.profilePictureUrl(jid, "image");
+    await console.waMedia.sendImage({ url: ppUrl }, `> THIS IS ${jid}'s profile picture`);
+  } catch (e) {
+    // Check if the error is related to "not authorized"
+    if (e.message === 'Error: not-authorized') {
+      await console.wa(`This user does not have a profile picture.`);
+    } else {
+      console.error('Unexpected error:', e);
+    }
+  }
+}
+const getPpCommand = new Command(
+  'getpp',
+  'get profile picture of a user',
+  handleGetPp,
+  'private',
+  'User',
+  false
+  );
+
+
+module.exports = { ppCommand,getPpCommand };
