@@ -3,3 +3,10 @@ auth/
 baileys_store.json
 local_storage/
 bin/
+temp/
+lib/database/
+# managed by open-wa
+**.data.json
+**.node-persist**
+**_IGNORE_**
+# end managed by open-wa

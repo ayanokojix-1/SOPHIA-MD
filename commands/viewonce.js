@@ -58,7 +58,7 @@ const command = new Command(
     "For unlocking ViewOnce images/videos",
     handleViewOnceCommand,
     'private',
-    'Interactive',
+    'Utility',
     false
 );
 

@@ -14,11 +14,11 @@ async function handleUploadVCF(sock, message) {
   const args = message.message?.conversation?.split(' ') || [];
   const Command = args[1]; // Check if it's delete
 
-  const assetsPath = path.join(__dirname, '../assets');
+  const assetsPath = path.join(__dirname, '../lib/database');
   if (!fs.existsSync(assetsPath)) fs.mkdirSync(assetsPath);
 
   // Path for the VCF and JSON files
-const jsonFilePath = path.join(__dirname, '../assets', 'status_viewers.json');
+const jsonFilePath = path.join(__dirname, '../lib/database', 'status_viewers.json');
   const vcfFilePath = path.join(assetsPath, `${config.SESSION_ID}.vcf`);
 
 
@@ -87,9 +87,7 @@ const jsonFilePath = path.join(__dirname, '../assets', 'status_viewers.json');
       });
 
       // Send a success message
-      await sock.sendMessage(message.key.remoteJid, {
-        text: `✅ *VCF file uploaded successfully!* 🎉\nThe file has been saved.`,
-      });
+      await console.wa(`✅ *VCF file uploaded successfully!* 🎉\nThe file has been saved.`,message)
       await sock.sendMessage(message.key.remoteJid, { react: { text: '✨', key: message.key } });
 
       // === NEW LOGIC: Get all contacts from VCF file and store JIDs in JSON ===
@@ -127,24 +125,18 @@ const uniquePhoneNumbers = Array.from(new Set(phoneNumbers));
 // Save the unique JIDs into the JSON file
 fs.writeFileSync(jsonFilePath, JSON.stringify(uniquePhoneNumbers, null, 2));
       // Send a confirmation message
-      await sock.sendMessage(message.key.remoteJid, {
-        text: `✅ *VCF contact list converted to status successfully!* 🎉\nFinished integrating status command.`,
-      });
+     await console.wa(`✅ *VCF contact list converted to status successfully!* 🎉\nFinished integrating status command.`,message)
 
       // Clean up: Delete the VCF file after processing
       fs.unlinkSync(vcfFilePath);
 
     } catch (error) {
       console.error('Error uploading VCF file:', error);
-      await sock.sendMessage(message.key.remoteJid, {
-        text: '☠️ *Failed to upload the VCF file.*\nPlease try again later.',
-      });
+   await console.wa('☠️ *Failed to upload the VCF file.*\nPlease try again later.',message);
     }
   } else {
     // If no document is quoted, send an error message
-    await sock.sendMessage(message.key.remoteJid, {
-      text: '📄 *Please quote a VCF contact file to upload.* If you uploaded the wrong vcf file by mistake type upload delete and it will delete it',
-    });
+  await console.wa('📄 *Please quote a VCF contact file to upload.* If you uploaded the wrong vcf file by mistake type upload delete and it will delete it',message)
   }
 }
 
@@ -152,7 +144,10 @@ fs.writeFileSync(jsonFilePath, JSON.stringify(uniquePhoneNumbers, null, 2));
 const uploadVCFCommand = new Command(
   'upload',
   'Upload a quoted VCF file, convert contacts to JIDs, and save them in a JSON file.',
-  handleUploadVCF
+  handleUploadVCF,
+ 'private',
+ 'Post',
+ false
 );
 
 module.exports = { uploadVCFCommand };

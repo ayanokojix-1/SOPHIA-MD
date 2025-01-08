@@ -111,9 +111,23 @@ const restartCommand = new Command(
 );
 
 
-const statusCommand = new Command('status', 'Displays the current status of the bot', handleStatusCommand);
-const pingCommand = new Command('ping', 'Responds with Pong and latency', handlePingCommand);
-const defineCommand = new Command('define', 'inbuilt dictionary for helping',handleDefineCommand, 'public')
+const statusCommand = new Command('status', 'Displays the current status of the bot', handleStatusCommand,'public','Utility',false);
+const pingCommand = new Command(
+    "ping",
+    "Checking latency/speed of bot",
+    handlePingCommand,
+    'public',
+    'Utility',
+    false
+);
+const defineCommand = new Command(
+    "define",
+    "gets the Definition of a word ",
+    handleDefineCommand,
+    'public',
+    'Interactive',
+    false
+);
 
 
 module.exports = { statusCommand,restartCommand,pingCommand, defineCommand };

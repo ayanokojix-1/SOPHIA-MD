@@ -14,10 +14,7 @@ async function handleTranscriptionCommand(sock, message) {
 
   if (!quoted?.audioMessage) {
     // If no quoted audio, send an error message and reaction
-    await sock.sendMessage(message.key.remoteJid, {
-      text: 'Please quote an audio message to change into text'},
-	    { quoted: message
-    });
+   await console.wa('_Please quote an Audio message to change to text_', message)
     await console.waReact('✖️',message.key)
   await  delay(3000)
 	  console.waReact(null,message.key)
@@ -73,7 +70,7 @@ async function handleTranscriptionCommand(sock, message) {
       await sock.sendMessage(message.key.remoteJid, {
         react: { text: '❌', key: message.key },
       });
-   delay(5000)
+ await  delay(5000)
 console.waReact(null,message.key)
       return;
     }

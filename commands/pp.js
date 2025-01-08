@@ -14,7 +14,7 @@ const ppCommand = new Command(
         const jid = sock.user.id;
         await sock.updateProfilePicture(jid,{url: imagepath});
 	await console.removeFile(imagepath);
-        await console.wa("successfully updated pfp");
+        await console.wa("> PROFILE PICTURE UPDATED SUCCESSFULLY");
       } catch (error) {
         console.log("pp error:", error);
         await console.wa("an error occurred");
@@ -28,5 +28,9 @@ const ppCommand = new Command(
   'Profile', // Category for organization
   false // No group restriction
 );
+
+async function handleGetPp(sock, message){
+  
+}
 
 module.exports = { ppCommand };

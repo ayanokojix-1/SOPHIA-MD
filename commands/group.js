@@ -5,9 +5,6 @@ const {isQuotedMessage, getQuotedInfo} = require('../lib/quotedMessageHandler');
 
 const tagAll = async (sock, message) => {
     if (!isInGroup(message)) {
-        await sock.sendMessage(message.key.remoteJid, {
-            text: '⚠️ This command can only be used in group chats.',
-        });
         return;
     }
 
@@ -100,7 +97,7 @@ if (!jid || jid.length === 0) {
     });
 
     // Add 3-second delay
-    await delay(3000);
+    await delay(1000);
 
     // Kick the participant from the group
     try {
@@ -128,8 +125,6 @@ const leaveGroup = async (sock, message) => {
     try {
 	    const botId = decodeJid(sock.user.id);
 	    const participantId = decodeJid(message.key.participant);
-	    console.log("Decoded Bot's ID:", botId);
-        console.log("Decoded Participant's ID:", participantId);
         
 
         // Restrict the command to the bot itself
@@ -143,12 +138,9 @@ const leaveGroup = async (sock, message) => {
 
         // Check if the message is in a group
         if (!isInGroup(message)) {
-            await sock.sendMessage(message.key.remoteJid, {
-                text: "⚠️ This command can only be used in group chats.",
-            });
             return;
         }
-await delay(3000)
+await delay(1000)
 
         // Leave the group
         await sock.groupLeave(message.key.remoteJid);
@@ -167,9 +159,6 @@ const tag = async (sock, message, match) => {
   try {
     // Ensure the command is used in a group
     if (!message.key.remoteJid.endsWith("@g.us")) {
-      await sock.sendMessage(message.key.remoteJid, {
-        text: "⚠️ This command can only be used in group chats.",
-      });
       return;
     }
 
@@ -223,7 +212,7 @@ async function handleJoinCommand(sock, message, args) {
 
     // Extract link from quoted message or command argument
     if (message.message?.extendedTextMessage?.contextInfo?.quotedMessage?.conversation) {
-        groupLink = message.message.extendedTextMessage.contextInfo.quotedMessage.conversation;
+        groupLink = m.quoted.conversation || m.quoted.extendedTextMessage;
     } else if (args.length > 0) {
         groupLink = args[0];
     } else {

@@ -1,6 +1,6 @@
 const axios = require('axios'); // To make HTTP requests
 const Command = require('../lib/Command');
-
+const { isValidTikTokURL} = require('../lib/functions')
 async function handleTikTokCommand(sock, message) {
   try {
     // Extract the message text or quoted message
@@ -20,8 +20,8 @@ async function handleTikTokCommand(sock, message) {
     const url = commandArgs[1] || quoting; // Use URL from command or quoted message
 
     // Validate TikTok URL using regex
-    const tiktokRegex = /^(https?:\/\/)?(vm\.tiktok\.com|www\.tiktok\.com)\/.+$/;
-    if (!url || !tiktokRegex.test(url)) {
+   
+    if (!url || !isValidTikTokURL(url)) {
       await console.wa('Please provide a valid TikTok URL in the format: #tiktok <URL>');
       return;
     }
@@ -41,7 +41,7 @@ async function handleTikTokCommand(sock, message) {
     }
 
     // Send the video using console.waMedia.sendVideo
-    await console.waMedia.sendVideo(videoUrl, '> ENJOY SOPHIA');
+    await console.waMedia.sendVideo({url:videoUrl}, '> DOWNLOADED WITH SOPHIA-MD');
 
     // Send success reaction
     await sock.sendMessage(message.key.remoteJid, {
