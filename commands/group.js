@@ -25,7 +25,7 @@ const tagAll = async (sock, message) => {
     });
 };
 
-async function handleKickCommand(sock, message, match) {
+async function handleKickCommand(sock, message) {
   try {
     // Check if the message is from a group
     if (!message.key.remoteJid.endsWith("@g.us")) {
@@ -46,37 +46,29 @@ async function handleKickCommand(sock, message, match) {
       });
     }
 
-    // Extract quoted JID (if the message is quoting someone)
-    let quotedJid = null;
-    if (
-      message.message?.extendedTextMessage?.contextInfo &&
-      message.message.extendedTextMessage.contextInfo.participant
-    ) {
-      quotedJid = message.message.extendedTextMessage.contextInfo.participant;
+    // Extract mentioned JIDs and quoted JID
+    let mentionedJid =
+      message.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
+    const quotedInfo = await getQuotedInfo(message, sock);
+    if (quotedInfo?.participant) {
+      mentionedJid.push(quotedInfo.participant);
     }
 
-    // Ensure JID format
-const ensureJidFormat = (jid) =>
-  jid.endsWith("@s.whatsapp.net") ? jid : jid + "@s.whatsapp.net";
+    // Ensure the JIDs are formatted correctly
+    const ensureJidFormat = (jid) =>
+      jid.endsWith("@s.whatsapp.net") ? jid : jid + "@s.whatsapp.net";
+    mentionedJid = mentionedJid.map(ensureJidFormat);
 
-let jid = null;
+    // Handle case when there's no valid JID
+    if (mentionedJid.length === 0) {
+      return await sock.sendMessage(message.key.remoteJid, {
+        text: "_Mention a user or quote a message to kick._",
+      });
+    }
 
-// Check for quoted JID
-    if (quotedJid) {
-  jid = [ensureJidFormat(quotedJid)];
-} else if (match && typeof match === "string") {
-  // If there's a match, extract the JID from the message
-  jid = (match.match(/@\d+/g) || []).map((jid) => ensureJidFormat(jid.replace("@", "")));
-}
-
-// Handle case when there's no user to kick
-if (!jid || jid.length === 0) {
-  return await sock.sendMessage(message.key.remoteJid, {
-    text: "_Mention a user to kick or quote the user._",
-  });
-}
-	const replacer = decodeJid(sock.user.id)
-    if (jid.includes(replacer)) {
+    // Check if the bot itself is being kicked
+    const botJid = decodeJid(sock.user.id);
+    if (mentionedJid.includes(botJid)) {
       return await sock.sendMessage(message.key.remoteJid, {
         text: "_I cannot kick myself._",
       });
@@ -85,7 +77,7 @@ if (!jid || jid.length === 0) {
     // Check if the target user is the group owner
     const groupMetadata = await sock.groupMetadata(message.key.remoteJid);
     const ownerJid = groupMetadata.owner || null;
-    if (jid.includes(ownerJid)) {
+    if (mentionedJid.includes(ownerJid)) {
       return await sock.sendMessage(message.key.remoteJid, {
         text: "_I cannot kick the group owner._",
       });
@@ -96,16 +88,22 @@ if (!jid || jid.length === 0) {
       text: "_Kicking..._",
     });
 
-    // Add 3-second delay
+    // Add 1-second delay
     await delay(1000);
 
-    // Kick the participant from the group
+    // Kick the participant(s) from the group
     try {
-      await sock.groupParticipantsUpdate(message.key.remoteJid, jid, "remove");
-      console.log(`Kicked JID: ${jid}`);
+      await sock.groupParticipantsUpdate(
+        message.key.remoteJid,
+        mentionedJid,
+        "remove"
+      );
+      console.log(`Kicked JID(s): ${mentionedJid}`);
       return await sock.sendMessage(message.key.remoteJid, {
-        text: `_@${jid[0].split("@")[0]} kicked_`,
-        mentions: jid,
+        text: `_Kicked:_\n${mentionedJid
+          .map((jid) => `@${jid.split("@")[0]}`)
+          .join("\n")}`,
+        mentions: mentionedJid,
       });
     } catch (error) {
       console.error("Error in groupParticipantsUpdate:", error);
@@ -119,7 +117,7 @@ if (!jid || jid.length === 0) {
       text: "_An error occurred while trying to kick the member._",
     });
   }
-} 
+}
 
 const leaveGroup = async (sock, message) => {
     try {

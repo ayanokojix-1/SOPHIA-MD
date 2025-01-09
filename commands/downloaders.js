@@ -62,13 +62,72 @@ await console.waReact(null,message.key);
   }
 }
 
+function isFbUrl(url) {
+    const regex = /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.com)\/.+$/;
+    return regex.test(url);
+}
+
+
+async function fbUrlDownloadHd(sock, message, args) {
+    // Extract the URL from args or the quoted message
+    const input = args[0] || 
+                  m.quoted?.conversation || 
+                  m.quoted?.extendedTextMessage?.matchedText;
+    console.log("this is the input",input);
+    if (!input) {
+        await console.wa('Please provide a Facebook URL or reply to a message with a valid Facebook link.');
+        return;
+    }
+
+    // Check if the input is a valid Facebook URL
+    if (!isFbUrl(input)) {
+        await console.wa('This is not a valid Facebook link. Please send a valid Facebook URL.\nFor example: .fb www.facebook.com');
+        return;
+    }
+
+    try {
+        // Fetch the Facebook video from the API
+        const response = await axios.get('https://api.giftedtech.web.id/api/download/facebook', {
+            params: {
+                apikey: "gifted",
+                url: input,
+            }
+        });
+
+        // Extract HD video URL
+        const fbVideo = response.data?.result?.hd_video;
+        
+        if (!fbVideo) {
+            await console.wa('No HD video found for this link.');
+            return;
+        }
+
+        // Send the video
+        await console.waMedia.sendVideo(
+            { url: fbVideo }, 
+            '> VIDEO DOWNLOADED WITH SOPHIA-MD'
+        );
+    } catch (err) {
+        console.error('Error during Facebook video download:', err);
+        await console.wa('An error occurred while processing your request.');
+    }
+}
+const fbUrlCommand = new Command(
+  'fb',
+  'downloads fb video in hd with url',
+  fbUrlDownloadHd,
+  "public",
+  "Downloaders",
+  false
+  );
+
 const tiktokCommand = new Command(
   'tiktok',
   'Download TikTok videos',
   handleTikTokCommand,
   'public',
-  'media',
+  'Downloaders',
   false
 );
 
-module.exports = { tiktokCommand };
+module.exports = { tiktokCommand,fbUrlCommand };

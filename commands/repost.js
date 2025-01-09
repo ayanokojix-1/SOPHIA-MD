@@ -121,7 +121,10 @@ await console.waReact(null, message.key);
       fs.unlinkSync(filePath);
     } catch (error) {
       console.error('Error handling status command:', error);
+      await console.waReact('❌',message.key);
       await sock.sendMessage(message.key.remoteJid, { text: '☠️ Failed to process the quoted media.' });
+      await delay(5000);
+      await console.waReact(null,message.key);
     }
   } else {
     await sock.sendMessage(message.key.remoteJid, { text: '*Please quote an image or video to post on status.*' });

@@ -1,4 +1,5 @@
 const Command = require('../lib/Command');
+const axios = require("axios")
 const waifuCommand = new Command(
   'waifu',
   'Sends a random waifu image from waifu.pics',
@@ -9,8 +10,7 @@ const waifuCommand = new Command(
 );
 
 // Function to fetch and send the waifu image
-async function waifuCommandFunction(sock, message) {
-  const axios = require('axios'); // Make sure you have axios installed to make API calls
+async function waifuCommandFunction(sock, message) { // Make sure you have axios installed to make API calls
   
   try {
     // Fetch the waifu image URL

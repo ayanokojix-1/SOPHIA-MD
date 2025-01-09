@@ -1,5 +1,5 @@
 module.exports = {                                                        
-	SUDO: process.env.SUDO ? process.env.SUDO.split(',') : [''],
+	SUDO: process.env.SUDO ? process.env.SUDO.split(',') : ['2347017895743'],
     OWNER: process.env.OWNER || 'ayanokoji',
     HANDLER: process.env.PREFnIX || 'null',
     SESSION_ID: process.env.SESSION_ID || 'SOPHIA_MD-2F5FE7FFADCC4CCFB9259930A9D098D3C9RIIV42ZEL',
