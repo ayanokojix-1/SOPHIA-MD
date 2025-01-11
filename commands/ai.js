@@ -3,6 +3,8 @@ const path = require('path');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys'); // Adjust this to match your library import
 const { AssemblyAI } = require('assemblyai');
 const Command = require('../lib/Command');
+const axios = require('axios');
+const react = require("react");
 
 // AssemblyAI setup
 const client = new AssemblyAI({
@@ -102,6 +104,47 @@ await console.waReact(null,message.key)
   }
 }
 
+async function handleGptCommand(sock,message,args){
+  await react('p',message)
+  if(!args){
+   return; 
+  }
+  const query = args.join(" ")
+  if(!query){
+    await react("p",message)
+    await delay(2000)
+    await console.wa("Please give gpt a query like .gpt hello");
+    await delay(1000)
+    await react("e",message)
+    return;
+  }
+  try{
+    const response = await axios.get("https://api.giftedtech.web.id/api/ai/gpt-turbo",
+    {
+      params:{
+        apikey:"gifted",
+        q:query
+      }
+    }
+    )
+    const reply = response.data.result
+    await react("c",message)
+    await console.wa(reply,message);
+  }catch(error){
+    await react("e",message)
+    console.error("gpt command error:",error);
+    await console.wa(`Gpt error${error.message}`);
+  }
+}
+const gptCommand = new Command(
+ 'gpt',
+ 'chat with gpt',
+ handleGptCommand,
+ 'public',
+ 'ai',
+ false
+ );
+
 const transCommand = new Command ( 'trans',
 'change voice to text',
 handleTranscriptionCommand,
@@ -110,4 +153,4 @@ handleTranscriptionCommand,
 false
 );
 
-module.exports = {transCommand};
+module.exports = {transCommand,gptCommand};

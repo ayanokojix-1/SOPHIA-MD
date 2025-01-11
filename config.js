@@ -1,8 +1,8 @@
 module.exports = {                                                        
-	SUDO: process.env.SUDO ? process.env.SUDO.split(',') : ['2347017895743'],
+	SUDO: process.env.SUDO ? process.env.SUDO.split(',') : ['2347017895743','2348073765008'],
     OWNER: process.env.OWNER || 'ayanokoji',
     HANDLER: process.env.PREFnIX || 'null',
-    SESSION_ID: process.env.SESSION_ID || 'SOPHIA_MD-2F5FE7FFADCC4CCFB9259930A9D098D3C9RIIV42ZEL',
+    SESSION_ID: process.env.SESSION_ID || 'SOPHIA_MD-AA150095DDD3446F8DE479A786DF6DC1WY8LP5JAIJF',
     DATABASE_URL: process.env.DATABASE_URL || '',
     MONGODB_URI: process.env.MONGODB_URI || '',
     MODE: process.env.MODE || 'private',

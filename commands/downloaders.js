@@ -73,7 +73,6 @@ async function fbUrlDownloadHd(sock, message, args) {
     const input = args[0] || 
                   m.quoted?.conversation || 
                   m.quoted?.extendedTextMessage?.matchedText;
-    console.log("this is the input",input);
     if (!input) {
         await console.wa('Please provide a Facebook URL or reply to a message with a valid Facebook link.');
         return;

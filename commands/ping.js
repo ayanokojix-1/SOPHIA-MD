@@ -106,7 +106,7 @@ const restartCommand = new Command(
     });
   },
   'private', // Access level (for admins only)
-  'Utility', // Category
+  'User', // Category
   false // Group-only restriction
 );
 

@@ -4,6 +4,7 @@ const config = require('./config');
 
 global.startTime = Date.now();
 require('./lib/mediaHelper');
+require('module-alias/register');
 
 // Create and start the Express server
 const app = express();
