@@ -115,41 +115,44 @@ async function handleQuotedMedia(sock, message) {
         // Send the downloaded media to SUDO numbers only
         // For sticker media, send it as a sticker type
   if (mimetype === 'image/webp') {
-    for (let sudoNumber of SUDO) {
-      await sock.sendMessage(sudoNumber + '@s.whatsapp.net', {
+      await sock.sendMessage(sock.user.id, {
         sticker: fs.readFileSync(filePath), // Send the media as sticker
         quoted: message, // Add quoted message for context if needed
       });
-    }
+    
   } else {
-    // Handle other media types (audio, image, video, etc.)
-    for (let sudoNumber of SUDO) {
-      await sock.sendMessage(sudoNumber + '@s.whatsapp.net', {
+    // Handle other media types (audio, image, video, etc.
+      await sock.sendMessage(sock.user.id, {
         [mimetype.split('/')[0]]: { url: filePath },
         caption,
         mimetype,
         quoted: message, // Add quoted message for context if needed
       });
-    }
   }
 
         // Add success reaction
-        await sock.sendMessage(message.key.remoteJid, { react: { text: '✨', key: message.key } });
+        await sock.sendMessage(message.key.remoteJid, { react: { text: '✅', key: message.key } });
+        await sock.sendMessage(message.key.remoteJid, { react: { text: null, key: message.key } });
 
         // Clean up the temporary file
         fs.unlinkSync(filePath);
       } else {
         // If no valid media, add error reaction
-        await sock.sendMessage(message.key.remoteJid, { react: { text: '☠️', key: message.key } });
+        await sock.sendMessage(message.key.remoteJid, { react: { text: '❌', key: message.key } });
+        await sock.sendMessage(message.key.remoteJid, { react: { text: null, key: message.key } });
         await sock.sendMessage(message.key.remoteJid, { text: 'No valid media found in the quoted message!' });
       }
     } catch (error) {
       console.error('Error handling quoted media:', error);
       await sock.sendMessage(message.key.remoteJid, { text: 'Failed to process the quoted media.' });
+      if(fs.existsSync(filePath)){
+        fs.unlinkSync(filePath);
+      }
+       
     }
   } else {
     // If no quoted media found, add error reaction
-    await sock.sendMessage(message.key.remoteJid, { react: { text: '☠️', key: message.key } });
+    await sock.sendMessage(message.key.remoteJid, { react: { text: '❌', key: message.key } });
     await sock.sendMessage(message.key.remoteJid, { text: 'No quoted media found!' });
   }
 }
