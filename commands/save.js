@@ -20,7 +20,7 @@ async function handleQuotedMedia(sock, message) {
       let mimetype;
       let caption = 'Saved!';
       
-      // Add loading reaction
+     
       await sock.sendMessage(message.key.remoteJid, { react: { text: '⌛', key: message.key } });
 
       // Image
