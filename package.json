@@ -40,6 +40,7 @@
   },
   "_moduleAliases": {
     "react": "lib/react",
-    "store": "lib/store"
+    "store": "lib/store",
+    "command":"lib/Command"
   }
 }

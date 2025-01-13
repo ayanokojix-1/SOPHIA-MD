@@ -28,5 +28,36 @@ async function waifuCommandFunction(sock, message) { // Make sure you have axios
   }
 }
 
+async function handleWebSsCommand(sock,m,args){
+  const input = args[0] || m.quoted?.conversation || m.quoted?.extendedTextMessage.text
+  if(!input){
+  await console.wa('Please add a url to screenshot like .webss <url>',m);
+return;
+}
 
-module.exports = {waifuCommand}
+try{
+  const response = await axios.get('https://bk9.fun/tools/screenshot', {
+  responseType: 'arraybuffer',  // Request image as array buffer
+  params: {
+    url: input,
+    device: 'phone',
+  },
+});
+const buffer = Buffer.from(response.data);
+await console.waMedia.sendImage(buffer,"> Here you Go!",m)
+
+}catch(error){
+  console.error("webss error",error)
+  await console.wa(`An error occurred: ${error.message}`,m)
+}
+}
+const webSsCommand = new Command(
+  'webss',
+  'screenshot of a website',
+  handleWebSsCommand,
+  'public',
+  'Utility',
+  false
+  );
+
+module.exports = {waifuCommand,webSsCommand}

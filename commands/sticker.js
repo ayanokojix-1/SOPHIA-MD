@@ -53,10 +53,10 @@ const handleTakeStickerCommand = async(sock,message,args)=> {
       const metaData = args[0] ||STICKER_PACKNAME;
       const stickerBuffer = await downloadMedia(message);
       const modifiedStickerBuffer = await writeExifWebp(stickerBuffer,metaData);
-     await console.waMedia.sendSticker(modifiedStickerBuffer)
+     await console.waMedia.sendSticker(modifiedStickerBuffer,message)
     }catch(er){
       console.error("error modifying sticker",er);
-      console.wa("An error occurred");
+      console.wa("An error occurred",message);
     }
   } else{
     console.wa('_Reply to a sticker_',message);

@@ -1,14 +1,14 @@
 const { downloadMediaMessage } = require('@whiskeysockets/baileys');
 const Command = require('../lib/Command');
 const Pino = require('pino');
-
+const react = require("react")
 async function handleViewOnceCommand(sock, message) {
     if (!m.quoted) {
-        console.wa('Reply to a ViewOnce message');
+        console.wa('Reply to a ViewOnce message',message);
         return;
     }
     if (!m.quoted.viewOnceMessageV2) {
-        console.wa('_This is not a ViewOnce message._\n_Please quote a ViewOnce message!!_');
+        console.wa('_This is not a ViewOnce message._\n_Please quote a ViewOnce message!!_',message);
         return;
     }
     try {
@@ -35,20 +35,25 @@ async function handleViewOnceCommand(sock, message) {
         );
 
         if (mess.message.imageMessage) {
-            await sock.sendMessage(message.key.remoteJid, {
+          await react('p',message)
+            await sock.sendMessage(sock.user.id, {
                 image: mediaBuffer,
                 caption: mess.message.imageMessage.caption || null,
                 viewOnce: false,
             });
+            await react('c',message)
         } else if (mess.message.videoMessage) {
+          await react('p',message)
             await sock.sendMessage(message.key.remoteJid, {
                 video: mediaBuffer,
                 caption: mess.message.videoMessage.caption || null,
                 viewOnce: false,
             });
+            await react('c',message)
         }
     } catch (error) {
-        console.wa('An error occurred. \nTry again later.');
+      await react('e',message)
+        console.wa(`An error occurred:.${error.message}\nTry again later.`,message);
         console.log(`Failed to download ViewOnce message: ${error}`);
     }
 }

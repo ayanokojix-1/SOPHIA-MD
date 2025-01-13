@@ -113,7 +113,7 @@ async function handleGptCommand(sock,message,args){
   if(!query){
     await react("p",message)
     await delay(2000)
-    await console.wa("Please give gpt a query like .gpt hello");
+    await console.wa("Please give gpt a query like .gpt hello",message);
     await delay(1000)
     await react("e",message)
     return;
@@ -133,7 +133,7 @@ async function handleGptCommand(sock,message,args){
   }catch(error){
     await react("e",message)
     console.error("gpt command error:",error);
-    await console.wa(`Gpt error${error.message}`);
+    await console.wa(`Gpt error${error.message}`,message);
   }
 }
 const gptCommand = new Command(

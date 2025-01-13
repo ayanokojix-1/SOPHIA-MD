@@ -22,7 +22,7 @@ async function handleTikTokCommand(sock, message) {
     // Validate TikTok URL using regex
    
     if (!url || !isValidTikTokURL(url)) {
-      await console.wa('Please provide a valid TikTok URL in the format: #tiktok <URL>');
+      await console.wa('Please provide a valid TikTok URL in the format: #tiktok <URL>',message);
       return;
     }
 
@@ -36,12 +36,12 @@ async function handleTikTokCommand(sock, message) {
     const videoUrl = response.data?.data;
 
     if (!videoUrl) {
-      await console.wa('Failed to retrieve the TikTok video. Please check the URL or try again later.');
+      await console.wa('Failed to retrieve the TikTok video. Please check the URL or try again later.',message);
       return;
     }
 
     // Send the video using console.waMedia.sendVideo
-    await console.waMedia.sendVideo({url:videoUrl}, '> DOWNLOADED WITH SOPHIA-MD');
+    await console.waMedia.sendVideo({url:videoUrl}, '> DOWNLOADED WITH SOPHIA-MD',message);
 
     // Send success reaction
     await sock.sendMessage(message.key.remoteJid, {
@@ -53,7 +53,7 @@ await console.waReact(null,message.key);
     console.error('Error downloading TikTok video:', error);
 
     // Send error message
-    await console.wa('An error occurred while trying to download the TikTok video. Please try again later.');
+    await console.wa('An error occurred while trying to download the TikTok video. Please try again later.',message);
 
     // Send error reaction
     await sock.sendMessage(message.key.remoteJid, {
@@ -74,41 +74,40 @@ async function fbUrlDownloadHd(sock, message, args) {
                   m.quoted?.conversation || 
                   m.quoted?.extendedTextMessage?.matchedText;
     if (!input) {
-        await console.wa('Please provide a Facebook URL or reply to a message with a valid Facebook link.');
+        await console.wa('Please provide a Facebook URL or reply to a message with a valid Facebook link.',message);
         return;
     }
 
     // Check if the input is a valid Facebook URL
     if (!isFbUrl(input)) {
-        await console.wa('This is not a valid Facebook link. Please send a valid Facebook URL.\nFor example: .fb www.facebook.com');
+        await console.wa('This is not a valid Facebook link. Please send a valid Facebook URL.\nFor example: .fb www.facebook.com',message);
         return;
     }
 
     try {
         // Fetch the Facebook video from the API
-        const response = await axios.get('https://api.giftedtech.web.id/api/download/facebook', {
+        const response = await axios.get('https://bk9.fun/download/fb', {
             params: {
-                apikey: "gifted",
                 url: input,
             }
         });
 
         // Extract HD video URL
-        const fbVideo = response.data?.result?.hd_video;
+        const fbVideo = response.data?.BK9?.hd;
         
         if (!fbVideo) {
-            await console.wa('No HD video found for this link.');
+            await console.wa('No HD video found for this link.',message);
             return;
         }
 
         // Send the video
         await console.waMedia.sendVideo(
             { url: fbVideo }, 
-            '> VIDEO DOWNLOADED WITH SOPHIA-MD'
+            '> VIDEO DOWNLOADED WITH SOPHIA-MD',message
         );
     } catch (err) {
         console.error('Error during Facebook video download:', err);
-        await console.wa('An error occurred while processing your request.');
+        await console.wa('An error occurred while processing your request.',message);
     }
 }
 const fbUrlCommand = new Command(

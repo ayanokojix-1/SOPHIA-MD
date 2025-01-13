@@ -85,8 +85,7 @@ const restartCommand = new Command(
   'Restart the bot',
   async (sock, message) => {
     console.log('Restarting the bot...');
-    // Send restart message using console.wa
-    await console.wa('Bot is restarting... 🔄');
+    await console.wa('Bot is restarting... 🔄',message);
     
     // Wait for 1 second using your delay helper
     await delay(1000);

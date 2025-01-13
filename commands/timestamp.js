@@ -3,7 +3,7 @@ const getMessageTimestamp = async (sock, message) => {
     try {
         const timestamp = message.messageTimestamp;
         if (!timestamp) {
-            await console.wa("Timestamp not found.");
+            await console.wa("Timestamp not found.",message);
             return;
         }
 
@@ -13,10 +13,10 @@ const getMessageTimestamp = async (sock, message) => {
         const formattedTime = date.toLocaleString("en-US", options);
 
         // Send the formatted time
-        await console.wa(`The message was sent on: ${formattedTime}\n\n> Command added by GPT. ❤️`);
+        await console.wa(`The message was sent on: ${formattedTime}\n\n> Command added by GPT. ❤️`,message);
     } catch (error) {
         console.error("Error getting timestamp:", error);
-        await console.wa("An error occurred while fetching the timestamp.");
+        await console.wa("An error occurred while fetching the timestamp.",message);
     }
 };
 

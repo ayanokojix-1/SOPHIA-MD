@@ -8,7 +8,7 @@ async function handleEditCommand(sock, message,args) {
       // Extract the quoted message information
       const quotedMessageContext = message.message.extendedTextMessage?.contextInfo;
       if (!quotedMessageContext || !quotedMessageContext.quotedMessage) {
-        return console.wa('_please reply a message to edit_');
+        return console.wa('_please reply a message to edit_',message);
       }
 
       // Get the stanzaId (message ID), participant (sender), and remoteJid (chat ID)
@@ -27,7 +27,7 @@ async function handleEditCommand(sock, message,args) {
       // Get the new text to replace the quoted message
       const newText = args.join(' ');
       if (!newText) {
-        return console.wa(`_provide text to edit_`)
+        return console.wa(`_provide text to edit_`,message)
       }
 
       // Edit the quoted message
@@ -96,9 +96,9 @@ async function handleHandCommand(sock, message, args) {
             });
         }
 
-        await console.wa('_You can also try using hand black_');
+        await console.wa('_You can also try using hand black_',message);
     } catch (error) {
-        console.wa('An error occurred while trying to send and edit the messages.');
+        console.wa('An error occurred while trying to send and edit the messages.',message);
     }
 }
 
@@ -114,7 +114,7 @@ async function handleDeleteCommand(sock, message){
     message: message.message.extendedTextMessage?.contextInfo?.quotedMessage,
   };
   if(!m.quoted){
-    await console.wa('_reply a message_\n> NOTE:This will only work for messages sent by you only');
+    await console.wa('_reply a message_\n> NOTE:This will only work for messages sent by you only',message);
     return;
   }
   try{
@@ -137,7 +137,7 @@ const mess = {
   };
   
   if(!m.quoted){
-    await console.wa('_reply a message_\n> NOTE: will only work if you\'re an admin');
+    await console.wa('_reply a message_\n> NOTE: will only work if you\'re an admin',message);
     return;
   }
   const isadmin = await isAdmin(
@@ -146,7 +146,7 @@ const mess = {
       sock
     );
   if(!isadmin){
-    await console.wa('_I am not admin_');
+    await console.wa('_I am not admin_',message);
     return;
   }
   try{
@@ -161,9 +161,9 @@ async function getDevices(sock,message){
   if(m.quoted){
   const deviceName = getDevice(m.stanzaId)
   const UpperCase = `*YOU ARE USING ${deviceName} FOR WHATSAPP*`.toUpperCase()
-  await console.wa(UpperCase)
+  await console.wa(UpperCase,message)
 }else{
-  await console.wa('Reply a message to get what type of device the person is using for whatsapp')
+  await console.wa('Reply a message to get what type of device the person is using for whatsapp',message)
 }
 }
 const getDeviceCommand = new Command(

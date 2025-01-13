@@ -155,26 +155,44 @@ async function handleAddOrRemoveCommand(sock, message, action) {
 
   const jid = message.key.remoteJid;
   let statusJidList = getStatusJidList();
+  const realMessage = message.message.conversation || message.message.extendedTextMessage.text;
+  const commandParts = realMessage.split(' '); // Splitting the message to get arguments
+  const phoneNumber = commandParts[1]; // This is the number passed with the command
 
+  let targetJid = jid; // Default to the sender's JID if no phone number is provided
+
+  if (phoneNumber) {
+    // If a phone number is provided, process it
+    const parsedPhoneNumber = parsePhoneNumberFromString(phoneNumber, 'NG'); // 'NG' for Nigeria, adjust if needed
+
+    if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
+      await sock.sendMessage(jid, { text: '⚠️ Invalid phone number format. Please provide a valid phone number.' });
+      return;
+    }
+
+    // Convert phone number to WhatsApp JID format
+    targetJid = `${parsedPhoneNumber.number.replace('+', '')}@s.whatsapp.net`;
+  }
+
+  // Action handling for adding/removing
   if (action === 'add') {
-    if (statusJidList.includes(jid)) {
+    if (statusJidList.includes(targetJid)) {
       await sock.sendMessage(jid, { text: '✅ User is already added to the status viewers list.' });
     } else {
-      statusJidList.push(jid);
+      statusJidList.push(targetJid);
       saveStatusJidList(statusJidList);
-      await sock.sendMessage(jid, { text: '✅ User has been successfully added to the status viewers list.' });
+      await sock.sendMessage(jid, { text: `✅ ${targetJid} has been successfully added to the status viewers list.` });
     }
   } else if (action === 'remove') {
-    if (statusJidList.includes(jid)) {
-      statusJidList = statusJidList.filter(item => item !== jid);
+    if (statusJidList.includes(targetJid)) {
+      statusJidList = statusJidList.filter(item => item !== targetJid);
       saveStatusJidList(statusJidList);
-      await sock.sendMessage(jid, { text: '❌ User has been successfully removed from the status viewers list.' });
+      await sock.sendMessage(jid, { text: `❌ ${targetJid} has been successfully removed from the status viewers list.` });
     } else {
       await sock.sendMessage(jid, { text: '⚠️ User is not in the status viewers list.' });
     }
   }
 }
-
 // Handler for the check viewers command
 async function handleCheckViewersCommand(sock, message) {
   // Restriction for groups and non-fromMe messages

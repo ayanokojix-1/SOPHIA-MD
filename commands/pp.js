@@ -17,13 +17,13 @@ const ppCommand = new Command(
         const jid = sock.user.id;
         await sock.updateProfilePicture(jid,{url: imagepath});
 	await console.removeFile(imagepath);
-        await console.wa("> PROFILE PICTURE UPDATED SUCCESSFULLY");
+        await console.wa("> PROFILE PICTURE UPDATED SUCCESSFULLY",message);
       } catch (error) {
         console.log("pp error:", error);
-        await console.wa("an error occurred");
+        await console.wa("an error occurred",message);
       }
     } else {
-      await console.wa("_Please reply to an image_");
+      await console.wa("_Please reply to an image_",message);
     }
   },
 
@@ -37,11 +37,11 @@ async function handleGetPp(sock, message) {
   try {
     const jid = getJid(message);
     const ppUrl = await sock.profilePictureUrl(jid, "image");
-    await console.waMedia.sendImage({ url: ppUrl }, `> THIS IS ${jid}'s profile picture`);
+    await console.waMedia.sendImage({ url: ppUrl }, `> THIS IS ${jid}'s profile picture`,message);
   } catch (e) {
     // Check if the error is related to "not authorized"
     if (e.message === 'Error: not-authorized') {
-      await console.wa(`This user does not have a profile picture.`);
+      await console.wa(`This user does not have a profile picture.`,message);
     } else {
       console.error('Unexpected error:', e);
     }
