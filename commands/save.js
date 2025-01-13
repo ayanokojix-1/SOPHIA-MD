@@ -99,7 +99,7 @@ async function handleQuotedMedia(sock, message) {
           sock
         );
         filePath = path.join(mediaPath, `sticker_${Date.now()}.webp`);
-        mimetype = 'image/webp';  // Stickers are usually in webp format
+        mimetype = 'image/webp'; 
       }
       
       if (mediaStream) {
