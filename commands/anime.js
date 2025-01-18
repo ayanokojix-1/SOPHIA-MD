@@ -1,5 +1,5 @@
 const axios = require('axios');
-const Command = require('../lib/Command');
+const sophia = require('../lib/sophia');
 // Fetch anime information from the Jikan API
 async function getAnimeInfo(animeName) {
   try {
@@ -61,14 +61,12 @@ async function handleAnimeCommand(sock, message) {
 }
 
 // Register the command with name, description, and handler function
-const animeCommand = new Command(
-	'animeinfo',
-	'get anime information',
-	handleAnimeCommand,
-	'public',
-	'anime',
-	false
-);
-
-module.exports = {animeCommand};
+sophia({
+name:'animeinfo',
+description:'get anime information',
+execute:handleAnimeCommand,
+accessLevel:'public',
+category:	'anime',
+isGroup:false
+});
 

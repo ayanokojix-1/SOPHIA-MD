@@ -1,7 +1,8 @@
 const Command = require('../lib/Command');
+const {isInGroup} = require('../lib/functions')
 const { isAdmin } = require('../lib/functions');
 const { getDevice } = require('@whiskeysockets/baileys');
-
+const sophia = require('../lib/sophia');
 let quotedMessageKey;
 async function handleEditCommand(sock, message,args) {
     try {
@@ -166,6 +167,53 @@ async function getDevices(sock,message){
   await console.wa('Reply a message to get what type of device the person is using for whatsapp',message)
 }
 }
+
+const blockCommand = new Command('block',
+'Blocks a user.',
+  async function(sock, message) {
+    if(isInGroup(message)&& m.quoted ){
+      jid = message.message.extendedTextMessage?.contextInfo?.participant
+    } else {
+      jid = message.key.remoteJid
+    }
+
+    try {
+      await console.wa(`_blocked_`,message);  // Sending feedback to the chat
+      await sock.updateBlockStatus(jid, 'block');
+    } catch (error) {
+      console.error(error);
+      await console.wa('Failed to block the user.');
+    }
+  },
+  'private',  // Modify as per your bot's requirements
+  'User',
+  false
+)
+sophia({
+  name:"unblock",
+  description:"To unblock a user",
+  execute: async function(sock, message) {
+    if(isInGroup(message)&& m.quoted ){
+      jid = message.message.extendedTextMessage?.contextInfo?.participant
+    } else {
+      jid = message.key.remoteJid
+    }
+
+    try {
+      await console.wa(`_unblocked_`,message);  // Sending feedback to the chat
+      await sock.updateBlockStatus(jid, 'unblock');
+    } catch (error) {
+      console.error(error);
+      await console.wa('Failed to block the user.');
+    }
+  },
+  accessLevel:'private',
+  category:'User',
+  isGroupCommand:false
+})
+
+
+
 const getDeviceCommand = new Command(
  'device',
  'get the device of a user',
@@ -193,4 +241,4 @@ const delcommand = new Command(
   false
   );
 
-module.exports = { editCommand,delcommand ,handCommand,dltcommand,getDeviceCommand };
+module.exports = { editCommand,delcommand ,handCommand,dltcommand,getDeviceCommand,blockCommand };

@@ -2,10 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const { downloadMediaMessage } = require('@whiskeysockets/baileys'); // Adjust this to match your library import
 const { AssemblyAI } = require('assemblyai');
-const Command = require('../lib/Command');
 const axios = require('axios');
 const react = require("react");
-
+const sophia = require('../lib/sophia');
 // AssemblyAI setup
 const client = new AssemblyAI({
   apiKey: 'ffb8372913cb4f0299ebb7a34d41656e', // Replace with your AssemblyAI API key
@@ -136,21 +135,20 @@ async function handleGptCommand(sock,message,args){
     await console.wa(`Gpt error${error.message}`,message);
   }
 }
-const gptCommand = new Command(
- 'gpt',
- 'chat with gpt',
- handleGptCommand,
- 'public',
- 'ai',
- false
- );
+sophia({
+ name:'gpt',
+ description:'chat with gpt',
+ execute:handleGptCommand,
+accessLevel: 'public',
+ category:'ai',
+isGroupCommand:false
+ });
 
-const transCommand = new Command ( 'trans',
-'change voice to text',
-handleTranscriptionCommand,
-'public',
-'ai',
-false
-);
-
-module.exports = {transCommand,gptCommand};
+sophia({ 
+name:'trans',
+description:'change voice to text',
+execute: handleTranscriptionCommand,
+accessLevel:'public',
+category:'ai',
+isgroup:false
+});

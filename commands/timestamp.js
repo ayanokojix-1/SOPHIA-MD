@@ -1,8 +1,8 @@
 const Command = require('../lib/Command')
-const getMessageTimestamp = async (sock, message) => {
+const getMessageTimestamp = async (sock, message,args) => {
     try {
-        const timestamp = message.messageTimestamp;
-        if (!timestamp) {
+        const timestamp = args[0];
+        if (!timestamp || isNaN(timestamp)) {
             await console.wa("Timestamp not found.",message);
             return;
         }
@@ -13,7 +13,7 @@ const getMessageTimestamp = async (sock, message) => {
         const formattedTime = date.toLocaleString("en-US", options);
 
         // Send the formatted time
-        await console.wa(`The message was sent on: ${formattedTime}\n\n> Command added by GPT. ❤️`,message);
+        await console.wa(`Formatted Timestamp: ${formattedTime}`,message);
     } catch (error) {
         console.error("Error getting timestamp:", error);
         await console.wa("An error occurred while fetching the timestamp.",message);
@@ -22,7 +22,7 @@ const getMessageTimestamp = async (sock, message) => {
 
 // Add the command to your handler
 const timestampCommand = new Command(
-    "timestamp",
+    "epoch",
     "Get the timestamp of a message in Nigerian time.",
     getMessageTimestamp,
     "public",

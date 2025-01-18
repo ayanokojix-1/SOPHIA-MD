@@ -1,13 +1,13 @@
-const Command = require('../lib/Command');
+const Command = require('../lib/sophia');
 const axios = require("axios")
-const waifuCommand = new Command(
-  'waifu',
-  'Sends a random waifu image from waifu.pics',
-  waifuCommandFunction,
-  'private',
-  'Fun',
-  false                                        
-);
+Command({
+  name:'waifu',
+  description:'Sends a random waifu image from waifu.pics',
+ execute: waifuCommandFunction,
+ accessLevel: 'private',
+ category: 'Fun',
+ group: false                                        
+});
 
 // Function to fetch and send the waifu image
 async function waifuCommandFunction(sock, message) { // Make sure you have axios installed to make API calls
@@ -51,13 +51,13 @@ await console.waMedia.sendImage(buffer,"> Here you Go!",m)
   await console.wa(`An error occurred: ${error.message}`,m)
 }
 }
-const webSsCommand = new Command(
-  'webss',
-  'screenshot of a website',
-  handleWebSsCommand,
-  'public',
-  'Utility',
-  false
-  );
+Command({
+ name: 'webss',
+description:  'screenshot of a website',
+execute:  handleWebSsCommand,
+accessLevel:  'public',
+ category: 'Utility',
+isGroupCommand:  false
+  });
 
-module.exports = {waifuCommand,webSsCommand}
+
