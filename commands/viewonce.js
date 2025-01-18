@@ -1,70 +1,64 @@
-const { downloadMediaMessage } = require('@whiskeysockets/baileys');
-const Command = require('../lib/Command');
-const Pino = require('pino');
-const react = require("react")
-async function handleViewOnceCommand(sock, message) {
-    if (!m.quoted) {
-        console.wa('Reply to a ViewOnce message',message);
-        return;
-    }
-    if (!m.quoted.viewOnceMessageV2) {
-        console.wa('_This is not a ViewOnce message._\n_Please quote a ViewOnce message!!_',message);
-        return;
-    }
+const sophia = require('sophia');
+const downloadMedia = require('../lib/downloadMedia');
+const react = require('react');
+
+sophia({
+  name: 'vv',
+  description: 'For unlocking view once images,video and voice note',
+  execute: async function (sock, message) {
     try {
-        const participant = message.key.participant;
-        const mess = {
-            key: {
-                id: m.stanzaId,
-                fromMe: message.key.fromMe,
-                remoteJid: message.key.remoteJid,
-                ...(participant && { participant }),
-            },
-            message: m.quoted.viewOnceMessageV2.message,
-        };
+      await react('p', message);
+      const quoted = message?.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+      
+      if (!quoted || quoted.conversation) {
+        await react('p', message);
+        await delay(2000);
+        await react('e', message);
+        await console.wa('Please reply to a view once message', message);
+        return;
+      }
 
-        const logger = Pino({ level: 'silent' });
-        const mediaBuffer = await downloadMediaMessage(
-            mess,
-            'buffer',
-            {},
-            {
-                logger,
-                reuploadRequest: sock.updateMediaMessage,
-            }
-        );
+      const media = quoted?.viewOnceMessageV2?.message || quoted;
+     
+      const content = media?.imageMessage || 
+                     media?.videoMessage || 
+                     media?.audioMessage ||
+                     quoted?.viewOnceMessageV2Extension?.message?.audioMessage;
+      
+      if (!content?.viewOnce && !quoted.viewOnceMessageV2 && !quoted.viewOnceMessageV2Extension) {
+        await react('e', message);
+        await console.wa('This is not a view once message', message);
+        return;
+      }
 
-        if (mess.message.imageMessage) {
-          await react('p',message)
-            await sock.sendMessage(sock.user.id, {
-                image: mediaBuffer,
-                caption: mess.message.imageMessage.caption || null,
-                viewOnce: false,
-            });
-            await react('c',message)
-        } else if (mess.message.videoMessage) {
-          await react('p',message)
-            await sock.sendMessage(message.key.remoteJid, {
-                video: mediaBuffer,
-                caption: mess.message.videoMessage.caption || null,
-                viewOnce: false,
-            });
-            await react('c',message)
-        }
+      const buffer = await downloadMedia(message);
+      
+      let mediaType = 'image';
+      let options = {};
+      
+      if (content.mimetype?.includes('video')) {
+        mediaType = 'video';
+        if (content.caption) options.caption = content.caption;
+      } else if (content.mimetype?.includes('audio')) {
+        mediaType = 'audio';
+        options.ptt = content.ptt || false;
+        options.mimetype = content.mimetype;
+      } else {
+        if (content.caption) options.caption = content.caption;
+      }
+
+      
+      const destination = message.key.fromMe ? sock.user.id : message.key.remoteJid;
+
+      await sock.sendMessage(destination, {
+        [mediaType]: buffer,
+        ...options
+      });
+      await react('c', message);
+
     } catch (error) {
-      await react('e',message)
-        console.wa(`An error occurred:.${error.message}\nTry again later.`,message);
-        console.log(`Failed to download ViewOnce message: ${error}`);
+      await react('e', message);
+      await console.wa(`Error processing view once message: ${error.message}`, message);
     }
-}
-
-const command = new Command(
-    "vv",
-    "For unlocking ViewOnce images/videos",
-    handleViewOnceCommand,
-    'private',
-    'Utility',
-    false
-);
-
-module.exports = { command };
+  }
+});
