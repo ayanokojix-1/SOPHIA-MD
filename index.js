@@ -1,4 +1,5 @@
-require('dotenv').config({ override: true,debug:true });const config = require('./config');
+
+const config = require('./config')
 const express = require('express');
 const connectionLogic = require('./lib/connect');
 
