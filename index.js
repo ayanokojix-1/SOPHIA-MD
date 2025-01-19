@@ -1,4 +1,4 @@
-
+const {handlerPrefix} = require('./lib/listener')
 const config = require('./config')
 const express = require('express');
 const connectionLogic = require('./lib/connect');
@@ -25,5 +25,5 @@ const PORT = config.PORT || 8005;
 app.listen(PORT, () => {
   console.log(`Express server is running on http://localhost:${PORT}`);
 });
-
+console.log(`The prefix is ${handlerPrefix}`)
 connectionLogic();
