@@ -1,6 +1,6 @@
+require('dotenv').config({ override: true,debug:true });const config = require('./config');
 const express = require('express');
 const connectionLogic = require('./lib/connect');
-const config = require('./config');
 
 global.startTime = Date.now();
 require('./lib/mediaHelper');
