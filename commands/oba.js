@@ -26,6 +26,7 @@ async function handleUpdateCommand(sock, message, args) {
         if (logOutput.trim()) {
           // There are commits in the remote repo that aren't in the local branch
           await console.wa(`New updates available:\n${logOutput}`, message);
+        
 
           if (args[0] === 'now') {
             // User wants to pull the updates and restart the bot
@@ -46,7 +47,7 @@ async function handleUpdateCommand(sock, message, args) {
               exec(npmRestart, (restartError, restartOutput, restartStderr) => {
                 if (restartError) {
                   console.error(`exec error: ${restartError}`);
-                  console.wa('An error occurred while restarting the bot.', message);
+                  console.wa(`An error occurred while restarting the bot.${restartError}`, message);
                   return;
                 }
 
