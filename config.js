@@ -6,7 +6,7 @@ module.exports = {
 	SUDO: process.env.SUDO ? process.env.SUDO.split(',') :[''],
     OWNER: process.env.OWNER || '',
     HANDLER: process.env.PREFIX || 'null',
-    SESSION_ID: process.env.SESSION_ID || 'SOPHIA_MD-1E1FB9F59563454A9BF9A67FAF041579R8TYY5MKCU',
+    SESSION_ID: process.env.SESSION_ID || 'SOPHIA_MD-85F63126B7D24D0A9D4F21A2AB05340EEXP7N0TBVH',
     DATABASE_URL: process.env.DATABASE_URL || '',
     MONGODB_URI: process.env.MONGODB_URI || '',
     MODE: process.env.MODE || 'private',

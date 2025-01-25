@@ -80,34 +80,6 @@ async function handleDefineCommand(sock, message) {
 }
 
 
-const restartCommand = new Command(
-  'restart',
-  'Restart the bot',
-  async (sock, message) => {
-    console.log('Restarting the bot...');
-    await console.wa('Bot is restarting... 🔄',message);
-    
-    // Wait for 1 second using your delay helper
-    await delay(1000);
-
-    // Restart logic
-    console.log('Bot restarting now...');
-    exec("npm restart", (error, stdout, stderr) => {
-      if (error) {
-        console.error(`Error restarting bot: ${error.message}`);
-        return;
-      }
-      if (stderr) {
-        console.error(`stderr: ${stderr}`);
-        return;
-      }
-      console.log(`stdout: ${stdout}`);
-    });
-  },
-  'private', // Access level (for admins only)
-  'User', // Category
-  false // Group-only restriction
-);
 
 
 const statusCommand = new Command('status', 'Displays the current status of the bot', handleStatusCommand,'public','Utility',false);
@@ -129,4 +101,4 @@ const defineCommand = new Command(
 );
 
 
-module.exports = { statusCommand,restartCommand,pingCommand, defineCommand };
+module.exports = { statusCommand,pingCommand, defineCommand };

@@ -40,7 +40,105 @@ async function handleEditCommand(sock, message,args) {
       console.error('Error editing message:', error);
       sock.sendMessage(message.key.remoteJid, { text: 'Failed to edit the message.' });
     }
-};
+}
+
+const path = require('path');
+
+sophia({
+    name: 'restart',
+    description: 'Restart the bot',
+    execute: async (sock, message, args) => {
+        // Current directory of the command file (inside commands folder)
+        const commandDir = __dirname;
+        
+        // Project root (one level up from commands)
+        const projectRootDir = path.resolve(commandDir, '..');
+        await console.wa(projectRootDir,message)
+        // Explicitly set the main script path
+        const mainScriptPath = path.resolve(projectRootDir, 'index.js');
+        await console.wa(mainScriptPath)
+
+        console.log('Project Root:', projectRootDir);
+        console.log('Main Script Path:', mainScriptPath);
+
+        console.log('Restarting the bot...');
+        await sock.sendMessage(message.key.remoteJid, { text: 'Bot is restarting... 🔄' });
+        
+        const restartStrategies = [
+            // 1st Priority: npm restart
+            () => {
+                console.log('Attempting npm restart...');
+                return new Promise((resolve) => {
+                    exec("npm restart", { cwd: projectRootDir }, (error, stdout, stderr) => {
+                        if (error || stderr) {
+                            console.log('npm restart failed, moving to next strategy');
+                            resolve(false);
+                        } else {
+                            console.log('npm restart successful');
+                            resolve(true);
+                        }
+                    });
+                });
+            },
+            
+            // 2nd Priority: pm2 restart index with explicit path
+            () => {
+                console.log('Attempting pm2 restart index...');
+                return new Promise((resolve) => {
+                    exec(`pm2 restart index --cwd "${projectRootDir}"`, (error, stdout, stderr) => {
+                        if (error || stderr) {
+                            console.log('pm2 restart index failed, moving to next strategy');
+                            resolve(false);
+                        } else {
+                            console.log('pm2 restart index successful');
+                            resolve(true);
+                        }
+                    });
+                });
+            },
+            
+            // 3rd Priority: Direct node restart with full path
+            () => {
+                console.log('Attempting direct node restart...');
+                return new Promise((resolve) => {
+                    exec(`node "${mainScriptPath}"`, { cwd: projectRootDir }, (error, stdout, stderr) => {
+                        if (error || stderr) {
+                            console.log('Direct node restart failed');
+                            resolve(false);
+                        } else {
+                            console.log('Direct node restart successful');
+                            resolve(true);
+                        }
+                    });
+                });
+            },
+            
+            // Ultimate Fallback
+            () => {
+                console.log('Ultimate fallback: Forcing process exit');
+                process.exit(0);
+            }
+        ];
+
+        // Try restart strategies sequentially
+        for (const strategy of restartStrategies) {
+            try {
+                const success = await strategy();
+                
+                // If successful, break the loop
+                if (success === true) {
+                    break;
+                }
+            } catch (err) {
+                console.error('Restart strategy failed:', err);
+            }
+        }
+    },
+    accessLevel: 'private',
+    category: 'System',
+    isGroupOnly: false
+});
+
 const editCommand = new Command( 'edit',
                                 'edit a message',
                                 handleEditCommand,
