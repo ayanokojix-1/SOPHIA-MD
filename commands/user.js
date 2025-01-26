@@ -3,6 +3,7 @@ const {isInGroup} = require('../lib/functions')
 const { isAdmin } = require('../lib/functions');
 const { getDevice } = require('@whiskeysockets/baileys');
 const sophia = require('../lib/sophia');
+const {exec} = require('child_process')
 let quotedMessageKey;
 async function handleEditCommand(sock, message,args) {
     try {
@@ -56,7 +57,7 @@ sophia({
         await console.wa(projectRootDir,message)
         // Explicitly set the main script path
         const mainScriptPath = path.resolve(projectRootDir, 'index.js');
-        await console.wa(mainScriptPath)
+        await console.wa(mainScriptPath,message)
 
         console.log('Project Root:', projectRootDir);
         console.log('Main Script Path:', mainScriptPath);
