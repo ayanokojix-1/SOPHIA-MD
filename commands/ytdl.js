@@ -18,7 +18,7 @@ sophia({
     if(!output){
       await delay(2000);
       await react('e',message);
-   await   console.wa('_Please type .play then the song you want to play',message);
+   await console.wa('_Please type .play then the song you want to play',message);
    return;
 }
 try{
@@ -32,6 +32,6 @@ try{
 }
   },
   accessLevel:'private',
-  Category:'Media',
+  category:'Media',
   isGroupOnly:false
 })
