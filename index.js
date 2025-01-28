@@ -22,8 +22,9 @@ app.get('/status', (req, res) => {
 
 // Start the server
 const PORT = config.PORT || 8005;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Express server is running on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
+
 console.log(`The prefix is ${handlerPrefix}`)
 connectionLogic();

@@ -1,7 +1,7 @@
 const path = require('path');
 const {existsSync} = require('fs');
 const configPath = path.join(__dirname, './config.env');
-if (existsSync(configPath)) require('dotenv').config({ path: configPath,override:true,debug:true });
+if (existsSync(configPath)) require('dotenv').config({ path: configPath,override:true,debug:false });
 module.exports = {                                                        
 	SUDO: process.env.SUDO ? process.env.SUDO.split(',') :[''],
     OWNER: process.env.OWNER || '',
