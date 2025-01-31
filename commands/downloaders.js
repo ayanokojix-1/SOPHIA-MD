@@ -1,6 +1,8 @@
 const axios = require('axios'); // To make HTTP requests
 const Command = require('../lib/Command');
+const {SUDO} = require('../config')
 const { isValidTikTokURL} = require('../lib/functions')
+const sophia = require('sophia');
 async function handleTikTokCommand(sock, message) {
   try {
     // Extract the message text or quoted message
@@ -127,5 +129,6 @@ const tiktokCommand = new Command(
   'Downloaders',
   false
 );
+
 
 module.exports = { tiktokCommand,fbUrlCommand };
