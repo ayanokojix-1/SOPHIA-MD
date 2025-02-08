@@ -21,7 +21,7 @@ if(m.quoted.stickerMessage.isAnimated!==false){
 	return;
 }
 try{
-const mediaBuffer = downloadMedia(message);
+const mediaBuffer = await  downloadMedia(message);
         // Save the sticker temporarily
         const tempInputPath = path.join(__dirname, 'temp.webp');
         const tempOutputPath = path.join(__dirname, 'temp.jpg');

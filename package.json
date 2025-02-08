@@ -15,6 +15,7 @@
   "author": "Ayanokoji",
   "license": "ISC",
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^6.7.9",
     "adm-zip": "^0.5.16",
     "archiver": "^7.0.1",
@@ -37,7 +38,8 @@
     "pg": "^8.13.1",
     "pm2": "^5.4.3",
     "punycode": "^2.3.1",
-    "read-line": "^0.1.2"
+    "read-line": "^0.1.2",
+    "socks-proxy-agent": "^8.0.5"
   },
   "_moduleAliases": {
     "react": "lib/react",
