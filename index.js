@@ -26,8 +26,8 @@ async function sendRequest() {
 
   try {
   
-const res = await axios.get(config.RENDER_URL);
- console.log(JSON.stringify(res.data,null,2))
+await axios.get(config.RENDER_URL);
+ // console.log(JSON.stringify(res.data,null,2))
   } catch (error) {
     console.error('Error sending request:', error);
   }

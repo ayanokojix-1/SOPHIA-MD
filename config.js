@@ -15,6 +15,6 @@ module.exports = {
     PORT: process.env.PORT || 8005,
     FULL_LOGS: toBool(process.env.FULL_LOGS) || false,
     RENDER_URL: process.env.RENDER_APP_URL || 'https://suhail-render-test-vvra.onrender.com',
-    RENDER: toBool(process.env.IS_RENDER) || true
+    RENDER: toBool(process.env.IS_RENDER) || true 
 };
 
