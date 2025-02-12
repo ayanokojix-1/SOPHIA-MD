@@ -4,7 +4,7 @@ const downloadMedia = require('../lib/downloadMedia');
 const fs = require('fs').promises;
 const { STICKER_PACKNAME } = require('../config')
 const path = require('path');
-const filePath = path.join("..","temp","tempBuff.jpg");
+const filePath = path.join(__dirname,"..","temp",`${Date.now()}.jpg`);
 const metaData = STICKER_PACKNAME ||'K.AYANOKOJI';
 const x = '❌';
 const glass = '⏳';
@@ -22,7 +22,8 @@ async function handleStickerCommand(sock, message){
     const webPBuffer = await createImgSticker(filePath,metaData);
    await console.waMedia.sendSticker(webPBuffer,message);
    await console.waReact(done,key);
-   await delay(5000)
+   await delay(5000);
+   await fs.unlink(filePath)
    await console.waReact(none,key);
   }catch(err){
     console.error('error handling sticker',err)
