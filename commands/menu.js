@@ -1,10 +1,10 @@
 const Command = require('../lib/Command'); 
-
+const fs = require('fs')
 const { commands } = require('../lib/commandHandler');
 const os = require('os');
 const moment = require('moment'); 
 const config = require('../config');
-
+const path = require('path')
 // Utility function to check memory usage
 function formatMemoryUsage() {
     const totalMemory = os.totalmem() / 1e9; // in GB
@@ -24,7 +24,7 @@ function getDatabaseInfo() {
     const db = config.DATABASE_URL ? "PostgreSQL" : "MongoDB (or Local)";
     return db;
 }
-
+const imagePath = path.join(__dirname,"..","assets","menu.jpg")
 const listCommands = async (sock, message) => {
     try {
         // Get system info
@@ -75,7 +75,22 @@ const listCommands = async (sock, message) => {
             responseText += `|☞|${cmds.join('\n|☞|')}\n`;
             responseText += `╚═══.·:·.☽✧ ✦ ✧☾.·:·.\n`;
         }
-	console.wa(responseText.trim(),message)
+	await sock.sendMessage(message.key.remoteJid,{
+	 // image: fs.readFileSync(imagePath),
+	  text:responseText.trim(),
+	  contextInfo: {
+	    externalAdReply: {
+                 title: 'SOPHIA-MD',
+                thumbnail: fs.readFileSync(imagePath),  // Optimized logo buffer
+              showAdAttribution: true,  // Show attribution for the ad
+               sourceUrl: 'https://whatsapp.com/channel/0029VasFQjXICVfoEId0lq0Q',  // URL for the ad
+                mediaType: 1,                
+              renderLargerThumbnail: true,
+            },
+	    isForwarded:true,
+	    forwardingScore:1000
+	  }
+	})
     } catch (error) {
         console.error('Error while listing commands:', error);
         await sock.sendMessage(message.key.remoteJid, { text: '☠️ Failed to list commands.' });
