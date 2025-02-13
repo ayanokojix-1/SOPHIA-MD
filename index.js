@@ -15,9 +15,9 @@ app.get('/', (req, res) => {
   res.send('<h1>WhatsApp Bot is Running!</h1>');
 });
 
-const axios = require('axios'); // Import axios
+const axios = require('axios');
 
-let interval
+let interval;
 
 async function sendRequest() {
   if(config.RENDER){
