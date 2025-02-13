@@ -17,7 +17,7 @@ app.get('/', (req, res) => {
 
 const axios = require('axios'); // Import axios
 
-let interval;
+let interval
 
 async function sendRequest() {
   if(config.RENDER){
