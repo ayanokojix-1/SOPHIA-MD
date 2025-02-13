@@ -32,7 +32,6 @@ await axios.get(config.RENDER_URL);
     console.error('Error sending request:', error);
   }
 
-  // Set the interval again
   interval = setInterval(sendRequest, 5000);
 }
 } 
