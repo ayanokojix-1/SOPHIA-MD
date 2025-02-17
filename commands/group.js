@@ -31,7 +31,7 @@ await console.wa('_muted_',message)
   },
   accessLevel:'private',
   category: 'Group',
-  isGroupCommand:true
+  isGroupOnly:true
 })
 
 sophia({
@@ -61,7 +61,7 @@ await sock.groupSettingUpdate(jid, 'not_announcement')
   },
   accessLevel:'private',
   category: 'Group',
-  isGroupCommand:true
+  isGroupOnly:true
 })
 
 const tagAll = async (sock, message) => {
@@ -233,7 +233,7 @@ sophia({
    execute: handleJoinCommand,
     accessLevel: 'public', // Restrict to owners for security
    category: 'Utility',
-    isGroupCommand:false
+    isGroupOnly:false
 });
 
 sophia({
@@ -319,7 +319,7 @@ sophia({
 },
   accessLevel:'private',
   category: 'Group',
-  isGroupCommand:true
+  isGroupOnly:true
 })
 
 sophia({
@@ -328,7 +328,7 @@ sophia({
   execute: tagAll,
     accessLevel:'public',
    category: 'Group',
-  isGroupCommand: true
+  isGroupOnly: true
 });
 
 sophia({
@@ -337,7 +337,7 @@ description:	'tag members of a group',
 	execute:tag,
 accessLevel:	'public',
 	category:'Group',
-	isGroupCommand:true
+	isGroupOnly:true
 });;
 
 sophia({
@@ -447,7 +447,7 @@ sophia({
 },
   accessLevel:'private',
   category: 'Group',
-  isGroupCommand:true
+  isGroupOnly:true
 })
 
 sophia({
@@ -533,7 +533,7 @@ sophia({
 },
   accessLevel:'private',
   category: 'Group',
-  isGroupCommand:true
+  isGroupOnly:true
 })
 
 
@@ -543,7 +543,7 @@ description:	'to leave a group',
 execute:	leaveGroup,
 accessLevel:	'private',
 category:	'Group',
-	isGroupCommand: true
+	isGroupOnly: true
 });
 
 
