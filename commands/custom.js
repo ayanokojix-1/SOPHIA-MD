@@ -11,7 +11,7 @@ sophia({
    if(beautifiedCode){
     await console.wa(beautifiedCode,message)
    } else {
-     console.wa("No beautified code available")
+     console.wa("No beautified code available",message)
    }
   },
   accessLevel: 'public',
