@@ -20,25 +20,24 @@ const axios = require('axios');
 let interval;
 
 async function sendRequest() {
+  try{
   if(config.RENDER){
   // Clear the previous interval to avoid overlapping executions
   clearInterval(interval);
 
-  try {
   
 await axios.get(config.RENDER_URL);
  // console.log(JSON.stringify(res.data,null,2))
+
+  interval = setInterval(sendRequest, 5000);
+} 
   } catch (error) {
     console.error('Error sending request:', error);
   }
-
-  interval = setInterval(sendRequest, 5000);
 }
-} 
-
 interval = setInterval(sendRequest, 5000);
 
-// Server status route
+// Server status route 
 app.get('/status', (req, res) => {
   res.json({ status: 'OK', message: 'Server is running smoothly!' });
 });

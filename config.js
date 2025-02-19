@@ -14,7 +14,7 @@ module.exports = {
     STICKER_PACKNAME: process.env.STICKER_PACKNAME || '',
     PORT: process.env.PORT || 8005,
     FULL_LOGS: toBool(process.env.FULL_LOGS) || false,
-    RENDER_URL: process.env.RENDER_APP_URL || 'https://suhail-render-test-vvra.onrender.com',
+    RENDER_URL: process.env.RENDER_APP_URL || '',// your render app url here
     RENDER: toBool(process.env.IS_RENDER) || true 
 };
 
