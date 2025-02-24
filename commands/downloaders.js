@@ -3,66 +3,8 @@ const Command = require('../lib/Command');
 const {SUDO} = require('../config')
 const { isValidTikTokURL} = require('../lib/functions')
 const sophia = require('sophia');
-async function handleTikTokCommand(sock, message) {
-  try {
-    // Extract the message text or quoted message
-    const text =
-      message.message?.conversation || // For normal text messages
-      message.message?.extendedTextMessage?.text || // For extended text messages
-      ''; // Fallback if no text is found
-
-    const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    const quoting =
-      quoted?.extendedTextMessage?.matchedText || // Text from quoted extendedTextMessage
-      quoted?.conversation || // Text from quoted conversation
-      null; // Fallback if no quoted text is found
-
-    // Parse command arguments
-    const commandArgs = text.split(' ');
-    const url = commandArgs[1] || quoting; // Use URL from command or quoted message
-
-    // Validate TikTok URL using regex
-   
-    if (!url || !isValidTikTokURL(url)) {
-      await console.wa('Please provide a valid TikTok URL in the format: #tiktok <URL>',message);
-      return;
-    }
-
-    // Send loading reaction
-    await sock.sendMessage(message.key.remoteJid, {
-      react: { text: '⏳', key: message.key },
-    });
-
-    // Fetch the video URL from the API
-    const response = await axios.get(`https://nikka-api.us.kg/dl/tiktok?apiKey=nikka&url=${encodeURIComponent(url)}`);
-    const videoUrl = response.data?.data;
-
-    if (!videoUrl) {
-      await console.wa('Failed to retrieve the TikTok video. Please check the URL or try again later.',message);
-      return;
-    }
-
-    // Send the video using console.waMedia.sendVideo
-    await console.waMedia.sendVideo({url:videoUrl}, '> DOWNLOADED WITH SOPHIA-MD',message);
-
-    // Send success reaction
-    await sock.sendMessage(message.key.remoteJid, {
-      react: { text: '📹', key: message.key },
-    });
-await delay(5000);
-await console.waReact(null,message.key);
-  } catch (error) {
-    console.error('Error downloading TikTok video:', error);
-
-    // Send error message
-    await console.wa('An error occurred while trying to download the TikTok video. Please try again later.',message);
-
-    // Send error reaction
-    await sock.sendMessage(message.key.remoteJid, {
-      react: { text: '❌', key: message.key },
-    });
-  }
-}
+const react = require('react')
+const {downloadTiktokVideo} = require('../lib/downloaders')
 
 function isFbUrl(url) {
     const regex = /^(https?:\/\/)?(www\.)?(facebook\.com|fb\.com)\/.+$/;
@@ -121,14 +63,54 @@ const fbUrlCommand = new Command(
   false
   );
 
-const tiktokCommand = new Command(
-  'tiktok',
-  'Download TikTok videos',
-  handleTikTokCommand,
-  'public',
-  'Downloaders',
-  false
-);
 
 
-module.exports = { tiktokCommand,fbUrlCommand };
+sophia({
+  name: 'tiktok',
+  description: 'Download TikTok videos',
+  execute: async (sock, message, args) => {
+    try{
+      const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+      const quoting = quoted?.extendedTextMessage?.matchedText || 
+                      quoted?.conversation || 
+                      null; // Fallback
+
+      // Get the TikTok URL from command or quoted text
+      const url = args[0] || quoting;
+console.log(url)
+      if (!url) {
+        await console.wa('Please provide a valid TikTok URL in the format: #tiktok <URL>', message);
+        return;
+      }
+
+      // Send pending reaction
+      await react('p', message);
+
+      // Download the video
+      const videoUrl = await downloadTiktokVideo(url);
+
+      if (!videoUrl) {
+        await console.wa('Failed to retrieve the TikTok video. Please check the URL or try again later.', message);
+        await react('e', message);
+        return;
+      }
+   await  console.log(videoUrl)
+
+      // Send the video
+      await console.waMedia.sendVideo({ url: videoUrl }, '> DOWNLOADED WITH SOPHIA-MD', message);
+
+      // Send complete reaction
+      await react('c', message);
+    } catch (error) {
+      console.error('Error downloading TikTok video:', error);
+      await console.wa('An error occurred while trying to download the TikTok video. Please try again later.', message);
+      await react('e', message);
+    }
+  },
+  accessLevel: 'public',
+  category: 'Downloaders',
+  isGroupOnly: false
+});
+
+
+module.exports = { fbUrlCommand };

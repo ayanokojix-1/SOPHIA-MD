@@ -365,8 +365,7 @@ sophia({
     }
 
     // Extract mentioned JIDs and quoted JID
-    let mentionedJid =
-      message.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
+    let mentionedJid = message.message?.extendedTextMessage?.contextInfo?.mentionedJid || [];
     const quotedInfo = message.message?.extendedTextMessage?.contextInfo;
     if (quotedInfo?.participant) {
       mentionedJid.push(quotedInfo.participant);
