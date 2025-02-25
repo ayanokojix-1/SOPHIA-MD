@@ -120,8 +120,8 @@ sophia({
 
     const query = args.join(" ");
     try {
-      const userId = sock.user.id.split(':')[0];
-      const reply = await gpt(query, userId);
+    //  const userId = sock.user.id.split(':')[0];
+      const reply = await gpt(query);
 
       if (!reply) {
         await react("e", message);
