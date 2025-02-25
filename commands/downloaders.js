@@ -77,7 +77,6 @@ sophia({
 
       // Get the TikTok URL from command or quoted text
       const url = args[0] || quoting;
-console.log(url)
       if (!url) {
         await console.wa('Please provide a valid TikTok URL in the format: #tiktok <URL>', message);
         return;
@@ -94,7 +93,6 @@ console.log(url)
         await react('e', message);
         return;
       }
-   await  console.log(videoUrl)
 
       // Send the video
       await console.waMedia.sendVideo({ url: videoUrl }, '> DOWNLOADED WITH SOPHIA-MD', message);

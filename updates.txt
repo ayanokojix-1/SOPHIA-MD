@@ -1,0 +1,3 @@
+
+Change changed alot:
+i changed the console.js and the command\sudo.js i didnt touch the functions and previously i pushed downloaders and sudo to the obfuscated ill just modify the semi
