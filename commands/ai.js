@@ -4,6 +4,7 @@ const { downloadMediaMessage } = require('@whiskeysockets/baileys'); // Adjust t
 const { AssemblyAI } = require('assemblyai');
 const axios = require('axios');
 const react = require("react");
+const { gpt } = require('../lib/ai')
 const sophia = require('../lib/sophia');
 // AssemblyAI setup
 const client = new AssemblyAI({
@@ -103,46 +104,43 @@ await console.waReact(null,message.key)
   }
 }
 
-async function handleGptCommand(sock,message,args){
-  await react('p',message)
-  if(!args){
-   return; 
-  }
-  const query = args.join(" ")
-  if(!query){
-    await react("p",message)
-    await delay(2000)
-    await console.wa("Please give gpt a query like .gpt hello",message);
-    await delay(1000)
-    await react("e",message)
-    return;
-  }
-  try{
-    const response = await axios.get("https://api.giftedtech.web.id/api/ai/gpt-turbo",
-    {
-      params:{
-        apikey:"gifted",
-        q:query
-      }
-    }
-    )
-    const reply = response.data.result
-    await react("c",message)
-    await console.wa(reply,message);
-  }catch(error){
-    await react("e",message)
-    console.error("gpt command error:",error);
-    await console.wa(`Gpt error${error.message}`,message);
-  }
-}
 sophia({
- name:'gpt',
- description:'chat with gpt',
- execute:handleGptCommand,
-accessLevel: 'public',
- category:'ai',
-isGroupCommand:false
- });
+  name: 'gpt',
+  description: 'Chat with GPT',
+  execute: async (sock, message, args) => {
+    await react('p', message);
+
+    if (!args || args.length === 0) {
+      await delay(2000);
+      await console.wa("Please give GPT a query like .gpt hello", message);
+      await delay(1000);
+      await react("e", message);
+      return;
+    }
+
+    const query = args.join(" ");
+    try {
+      const userId = sock.user.id.split(':')[0];
+      const reply = await gpt(query, userId);
+
+      if (!reply) {
+        await react("e", message);
+        await console.wa("GPT failed to generate a response. Try again later.", message);
+        return;
+      }
+
+      await react("c", message);
+      await console.wa(reply, message);
+    } catch (error) {
+      await react("e", message);
+      console.error("GPT command error:", error);
+      await console.wa(`GPT error: ${error.message}`, message);
+    }
+  },
+  accessLevel: 'public',
+  category: 'ai',
+  isGroupCommand: false
+});
 
 sophia({ 
 name:'trans',

@@ -55,6 +55,9 @@ sophia({
     const sudoList = getSudoList()
     const checkedSudoList = sudoList.length > 0 ? sudoList.join(",") : "0"
     await console.wa(`Sudo numbers are: ${checkedSudoList}\nTotal ${sudoList.length}`,message)
-  }
+  },
+  accessLevel:'private',
+  category:'System',
+  isGroupOnly:false
    
 })
