@@ -545,7 +545,33 @@ category:	'Group',
 	isGroupOnly: true
 });
 
+sophia({
+  name: 'revoke',
+  description: 'Revoke and regenerate the group invite link.',
+  execute: async (sock, message, args) => {
+    const remoteJid = message.key.remoteJid
+    if(!await isAdmin(remoteJid,message.key.participant,sock)) return console.wa("_You need to be an admin to use this command._",message)
+    const newCode = await sock.groupRevokeInvite(remoteJid);
+    sock.sendMessage(remoteJid, { text: `New group invite link: https://chat.whatsapp.com/${newCode}` });
+  },
+  accessLevel: 'public',
+  category: 'Group',
+  isGroupOnly: true
+});
 
+sophia({
+  name: 'invite',
+  description: 'Get the current group invite link.',
+  execute: async (sock, message, args) => {
+    const remoteJid = message.key.remoteJid;
+    if(!await isAdmin(remoteJid,message.key.participant,sock)) return console.wa("_You need to be an admin to use this command._",message)
+    const code = await sock.groupInviteCode(remoteJid);
+    sock.sendMessage(remoteJid, { text: `Group invite link: https://chat.whatsapp.com/${code}` });
+  },
+  accessLevel: 'public',
+  category: 'Group',
+  isGroupOnly: true
+});
 
 sophia({
     name: 'antilink',
